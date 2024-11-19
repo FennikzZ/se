@@ -24,6 +24,8 @@ const PromotionCreate = Loadable(lazy(() => import("../pages/promotion/create"))
 
 const PromotionEdit = Loadable(lazy(() => import("../pages/promotion/edit")));
 
+const View = Loadable(lazy(() => import("../pages/view")));
+
 
 const AdminRoutes = (isLoggedIn : boolean): RouteObject => {
 
@@ -109,6 +111,14 @@ const AdminRoutes = (isLoggedIn : boolean): RouteObject => {
           },
 
         ],
+
+      },
+      //view
+      {
+
+        path: "/view",
+
+        element: <View />,
 
       },
 

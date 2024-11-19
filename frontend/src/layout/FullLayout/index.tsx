@@ -22,6 +22,9 @@ import CustomerEdit from "../../pages/customer/edit";
 import Promotion from "../../pages/promotion";
 import PromotionCreate from "../../pages/promotion/create";
 import PromotionEdit from "../../pages/promotion/edit";
+//view
+import View from "../../pages/view";
+
 
 const { Header, Content, Footer, Sider } = Layout;
 
@@ -97,6 +100,7 @@ const FullLayout: React.FC = () => {
                 </Link>
               </Menu.Item>
 
+
               <Menu.Item
                 key="promotion"
                 onClick={() => setCurrentPage("promotion")}
@@ -104,6 +108,16 @@ const FullLayout: React.FC = () => {
                 <Link to="/promotion" style={{ color: "#000" }}> {/* เปลี่ยนสีข้อความเป็นสีดำ */}
                   <UserOutlined />
                   <span>Promotion</span>
+                </Link>
+              </Menu.Item>
+
+              <Menu.Item
+                key="view"
+                onClick={() => setCurrentPage("view")}
+              >
+                <Link to="/view" style={{ color: "#000" }}> {/* เปลี่ยนสีข้อความเป็นสีดำ */}
+                  <UserOutlined />
+                  <span>Promotion View</span>
                 </Link>
               </Menu.Item>
             </Menu>
@@ -141,10 +155,13 @@ const FullLayout: React.FC = () => {
               <Route path="/customer/create" element={<CustomerCreate />} />
               <Route path="/customer/edit/:id" element={<CustomerEdit />} />
 
-              {/* promotion */}
+              //promotion
               <Route path="/promotion" element={<Promotion />} />
               <Route path="/promotion/create" element={<PromotionCreate />} />
               <Route path="/promotion/edit/:id" element={<PromotionEdit />} />
+              //View
+              <Route path="/view" element={<View />} />
+
             </Routes>
           </div>
         </Content>
