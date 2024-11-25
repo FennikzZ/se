@@ -17,8 +17,7 @@ type Promotion struct {
 	PromotionDescription string    `json:"promotion_description"`                       // คำอธิบายโปรโมชั่น
 	Discount             float64   `json:"discount"`                                    // ส่วนลดโปรโมชั่น
 	DiscountType         string    `json:"discount_type"`                               // ประเภทส่วนลด (amount/percent)
-	MaxUses              int       `json:"max_uses"`                                    // จำนวนผู้ใช้ที่ใช้ได้สูงสุด
-	UsesCount            uint8     `json:"uses_count"`                                  // จำนวนคนที่ใช้ไปแล้ว
+	StartDate            time.Time `json:"start_date"`                                    // วันที่หมดเขตโปรโมชั่น
 	EndDate              time.Time `json:"end_date"`                                    // วันที่หมดเขตโปรโมชั่น
     Photo               string    `gorm:"type:longtext" json:"photo"`  // รูปโปรโมชั่น
 }

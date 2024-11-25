@@ -47,6 +47,11 @@ function Promotion() {
       key: "discount",
     },
     {
+      title: "วันเริ่มต้น",
+      key: "start_date",
+      render: (record) => <>{dayjs(record.start_date).format("DD/MM/YYYY")}</>,
+    },
+    {
       title: "วันหมดเขต",
       key: "end_date",
       render: (record) => <>{dayjs(record.end_date).format("DD/MM/YYYY")}</>,
@@ -55,19 +60,11 @@ function Promotion() {
       title: "คำอธิบายโปรโมชั่น",
       dataIndex: "promotion_description",
       key: "promotion_description",
-      render: (text) => <>{text || "-"}</>,
-    },
-    {
-      title: "จำนวนครั้งที่ใช้ได้",
-      dataIndex: "max_uses",
-      key: "max_uses",
-      render: (text) => <>{text || "-"}</>,
-    },
-    {
-      title: "จำนวนการใช้",
-      dataIndex: "uses_count",
-      key: "uses_count",
-      render: (text) => <>{text || "-"}</>,
+      render: (text) => (
+        <div style={{ wordWrap: 'break-word', whiteSpace: 'normal', maxWidth: '200px' }}>
+          {text || "-"}
+        </div>
+      ),
     },
     {
       title: "",
@@ -76,7 +73,7 @@ function Promotion() {
           type="dashed"
           danger
           icon={<DeleteOutlined />}
-          onClick={() => deletePromotionById(record.ID!)}
+          onClick={() => deletePromotionById(record.ID!)} // ใช้ 'id' ตาม interface
         >
           ลบ
         </Button>
@@ -131,7 +128,6 @@ function Promotion() {
       messageApi.error("ไม่สามารถลบโปรโมชันได้");
     }
   };
-  
 
   // Fetch data on component mount
   useEffect(() => {

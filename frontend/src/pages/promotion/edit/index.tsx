@@ -38,8 +38,8 @@ function PromotionEdit() {
         promotion_code: promotion.promotion_code || "", // Ensure it's not undefined
         promotion_name: promotion.promotion_name || "", // Ensure it's not undefined
         discount_type: promotion.discount_type || "amount", // Ensure it's not undefined
-        discount: promotion.discount || 0, // Ensure it's not undefined
-        max_uses: promotion.max_uses || 1, // Ensure it's not undefined
+        discount: promotion.discount || "", // Ensure it's not undefined
+        start_date: promotion.start_date ? dayjs(promotion.start_date) : null,
         end_date: promotion.end_date ? dayjs(promotion.end_date) : null,
         promotion_description: promotion.promotion_description || "", // Ensure it's not undefined
       });
@@ -199,14 +199,14 @@ function PromotionEdit() {
             {/* Max Uses and End Date */}
             <Col xs={24}>
               <Row gutter={[16, 16]}>
-                <Col xs={24} sm={12}>
-                  <Form.Item label="จำนวนครั้งที่ใช้ได้" name="max_uses" rules={[{ required: true, message: "กรุณากรอกจำนวนครั้งที่ใช้ได้ !" }]}>
-                    <InputNumber min={1} style={{ width: "100%" }} />
+              <Col xs={24} sm={12}>
+                  <Form.Item label="วันเริ่มโปรโมชั่น" name="start_date" rules={[{ required: true, message: "กรุณาเลือกวันหมดเขต !" }]}>
+                    <DatePicker style={{ width: "100%" }} />
                   </Form.Item>
                 </Col>
 
                 <Col xs={24} sm={12}>
-                  <Form.Item label="วันหมดเขต" name="end_date" rules={[{ required: true, message: "กรุณาเลือกวันหมดเขต !" }]}>
+                  <Form.Item label="วันสิ้นสุด" name="end_date" rules={[{ required: true, message: "กรุณาเลือกวันหมดเขต !" }]}>
                     <DatePicker style={{ width: "100%" }} />
                   </Form.Item>
                 </Col>

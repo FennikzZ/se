@@ -5,8 +5,7 @@ export interface PromotionInterface {
     promotion_description?: string;
     discount?: number; // จำนวนส่วนลด
     discount_type?: "amount" | "percent"; // ประเภทส่วนลด
-    max_uses?: number;
-    uses_count?: number;
+    start_date?: string;
     end_date?: string;
     photo?: string;
   }

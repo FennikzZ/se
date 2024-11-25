@@ -199,18 +199,18 @@ function PromotionCreate() {
             {/* จำนวนครั้งที่ใช้ได้ และ วันหมดเขต */}
             <Col xs={24}>
               <Row gutter={[16, 16]}>
-                <Col xs={24} sm={12}>
+              <Col xs={24} sm={12}>
                   <Form.Item
-                    label="จำนวนครั้งที่ใช้ได้"
-                    name="max_uses"
-                    rules={[{ required: true, message: "กรุณากรอกจำนวนครั้งที่ใช้ได้ !" }]}>
-                    <InputNumber min={1} style={{ width: "100%" }} />
+                    label="วันเริ่มโปรโมชั่น"
+                    name="start_date"
+                    rules={[{ required: true, message: "กรุณาเลือกวันหมดเขต !" }]}>
+                    <DatePicker style={{ width: "100%" }} />
                   </Form.Item>
                 </Col>
 
                 <Col xs={24} sm={12}>
                   <Form.Item
-                    label="วันหมดเขต"
+                    label="วันสิ้นสุดโปรโมชั่น"
                     name="end_date"
                     rules={[{ required: true, message: "กรุณาเลือกวันหมดเขต !" }]}>
                     <DatePicker style={{ width: "100%" }} />
