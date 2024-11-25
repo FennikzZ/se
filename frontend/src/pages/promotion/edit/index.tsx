@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import {
-  Space,
   Button,
   Col,
   Row,
@@ -19,7 +18,8 @@ import { PromotionInterface } from "../../../interfaces/IPromotion";
 import { GetPromotionById, UpdatePromotionById } from "../../../services/https";
 import { useNavigate, Link, useParams } from "react-router-dom";
 import dayjs from "dayjs";
-import ImgCrop from "antd-img-crop"; // Use 'antd-img-crop' for image upload and cropping
+import ImgCrop from "antd-img-crop"; // Image crop for upload
+import { useSpring, animated } from "@react-spring/web"; // Animation
 
 function PromotionEdit() {
   const navigate = useNavigate();
@@ -29,21 +29,22 @@ function PromotionEdit() {
   const [discountType, setDiscountType] = useState<"amount" | "percent">("amount");
   const [form] = Form.useForm();
 
+  // Fetch promotion data by ID
   const getPromotionById = async (id: string) => {
     let res = await GetPromotionById(id);
 
     if (res.status === 200) {
       const promotion = res.data;
       form.setFieldsValue({
-        promotion_code: promotion.promotion_code || "", // Ensure it's not undefined
-        promotion_name: promotion.promotion_name || "", // Ensure it's not undefined
-        discount_type: promotion.discount_type || "amount", // Ensure it's not undefined
-        discount: promotion.discount || "", // Ensure it's not undefined
+        promotion_code: promotion.promotion_code || "",
+        promotion_name: promotion.promotion_name || "",
+        discount_type: promotion.discount_type || "amount",
+        discount: promotion.discount || "",
         start_date: promotion.start_date ? dayjs(promotion.start_date) : null,
         end_date: promotion.end_date ? dayjs(promotion.end_date) : null,
-        promotion_description: promotion.promotion_description || "", // Ensure it's not undefined
+        promotion_description: promotion.promotion_description || "",
       });
-      setDiscountType(promotion.discount_type || "amount"); // Ensure it's not undefined
+      setDiscountType(promotion.discount_type || "amount");
       setFileList(promotion.photo ? [{ url: promotion.photo }] : []);
     } else {
       messageApi.open({
@@ -56,6 +57,7 @@ function PromotionEdit() {
     }
   };
 
+  // Handle form submission
   const onFinish = async (values: PromotionInterface) => {
     const promotionData = {
       ...values,
@@ -63,7 +65,7 @@ function PromotionEdit() {
       photo: fileList.length > 0 ? fileList[0].thumbUrl : null,
     };
 
-    let res = await UpdatePromotionById(id || "", promotionData); // Ensure id is passed as string
+    let res = await UpdatePromotionById(id || "", promotionData);
 
     if (res.status === 200) {
       messageApi.open({
@@ -102,138 +104,193 @@ function PromotionEdit() {
 
   useEffect(() => {
     if (id) {
-      getPromotionById(id);  // ดึงข้อมูลโปรโมชั่นจาก API
+      getPromotionById(id);
     } else {
       messageApi.open({
         type: "error",
         content: "ไม่พบข้อมูลโปรโมชั่น",
       });
-      navigate("/promotion");  // ถ้าไม่มี id จะไปหน้าอื่น
+      navigate("/promotion");
     }
   }, [id]);
-  
+
+  // Adding animation for the card and form
+  const cardAnimation = useSpring({
+    opacity: 1,
+    transform: "translateY(0)",
+    from: { opacity: 0, transform: "translateY(-50px)" },
+    config: { tension: 250, friction: 20 },
+  });
+
+  const formAnimation = useSpring({
+    opacity: 1,
+    transform: "translateY(0)",
+    from: { opacity: 0, transform: "translateY(20px)" },
+    delay: 100,
+    config: { tension: 200, friction: 30 },
+  });
 
   return (
-    <div style={{ display: "flex", justifyContent: "center", padding: "20px" }}>
+    <div style={{ display: "flex", justifyContent: "center", padding: "20px", backgroundColor: "rgba(233, 213, 255, 0.4)" }}>
       {contextHolder}
-      <Card style={{ width: "100%", maxWidth: "800px" }}>
-        <h2>แก้ไขข้อมูล โปรโมชั่น</h2>
-        <Divider />
+      <animated.div style={cardAnimation}>
+        <Card
+          style={{
+            width: "100%",
+            maxWidth: "800px",
+            backgroundColor: "rgba(255, 255, 255, 0.7)",
+            borderRadius: "8px",
+            padding: "20px",
+            display: "flex",
+            flexDirection: "column",
+          }}
+        >
+          <h2 style={{ color: "#6B21A8", textAlign: "center", fontSize: "29px", fontWeight: "bold", marginTop: 0 }}>
+            แก้ไขข้อมูล โปรโมชั่น
+          </h2>
+          <Divider style={{ margin: "10px 0" }} />
 
-        {/* Image Upload */}
-        <Row justify="center" style={{ marginBottom: 16 }}>
-          <Col xs={4} style={{ textAlign: "center" }}>
-            <Form.Item label="รูปภาพโปรโมชั่น" name="photo">
-              <ImgCrop rotationSlider>
-                <Upload
-                  listType="picture-card"
-                  fileList={fileList}
-                  onChange={onChange}
-                  onPreview={onPreview}
-                  beforeUpload={() => false}
-                  maxCount={1}
-                >
-                  {fileList.length < 1 && (
-                    <div>
-                      <PlusOutlined />
-                      <div style={{ marginTop: 8 }}>อัพโหลด</div>
-                    </div>
-                  )}
-                </Upload>
-              </ImgCrop>
-            </Form.Item>
-          </Col>
-        </Row>
-
-        <Form name="promotionEdit" form={form} layout="vertical" onFinish={onFinish} autoComplete="off">
-          <Row gutter={[16, 16]}>
-            {/* Promotion Code and Name */}
-            <Col xs={24}>
-              <Row gutter={[16, 16]}>
-                <Col xs={24} sm={12}>
-                  <Form.Item
-                    label="รหัสโปรโมชั่น"
-                    name="promotion_code"
-                    rules={[{ required: true, message: "กรุณากรอกรหัสโปรโมชั่น !" }, { max: 20, message: "รหัสโปรโมชั่นต้องไม่เกิน 20 ตัวอักษร !" }]}
+          {/* Image Upload */}
+          <Row justify="center" style={{ marginBottom: 16 }}>
+            <Col xs={4} style={{ textAlign: "center" }}>
+              <Form.Item label="รูปภาพโปรโมชั่น" name="photo">
+                <ImgCrop rotationSlider>
+                  <Upload
+                    listType="picture-card"
+                    fileList={fileList}
+                    onChange={onChange}
+                    onPreview={onPreview}
+                    beforeUpload={() => false}
+                    maxCount={1}
                   >
-                    <Input placeholder="กรอกรหัส เช่น NEWYEAR2024" />
-                  </Form.Item>
-                </Col>
-
-                <Col xs={24} sm={12}>
-                  <Form.Item
-                    label="ชื่อโปรโมชั่น"
-                    name="promotion_name"
-                    rules={[{ required: true, message: "กรุณากรอกชื่อโปรโมชั่น !" }]}
-                  >
-                    <Input />
-                  </Form.Item>
-                </Col>
-              </Row>
-            </Col>
-
-            {/* Discount Type and Amount */}
-            <Col xs={24}>
-              <Row gutter={[16, 16]}>
-                <Col xs={24} sm={12}>
-                  <Form.Item
-                    label="ประเภทส่วนลด"
-                    name="discount_type"
-                    rules={[{ required: true, message: "กรุณาเลือกประเภทส่วนลด !" }]}
-                  >
-                    <Select value={discountType} onChange={(value) => setDiscountType(value)}>
-                      <Select.Option value="amount">จำนวนเงิน (บาท)</Select.Option>
-                      <Select.Option value="percent">เปอร์เซ็นต์ (%)</Select.Option>
-                    </Select>
-                  </Form.Item>
-                </Col>
-
-                <Col xs={24} sm={12}>
-                  <Form.Item label={discountType === "amount" ? "ส่วนลด (บาท)" : "ส่วนลด (%)"} name="discount" rules={[{ required: true, message: "กรุณากรอกจำนวนส่วนลด !" }]}>
-                    <InputNumber min={0} max={discountType === "percent" ? 100 : undefined} style={{ width: "100%" }} />
-                  </Form.Item>
-                </Col>
-              </Row>
-            </Col>
-
-            {/* Max Uses and End Date */}
-            <Col xs={24}>
-              <Row gutter={[16, 16]}>
-              <Col xs={24} sm={12}>
-                  <Form.Item label="วันเริ่มโปรโมชั่น" name="start_date" rules={[{ required: true, message: "กรุณาเลือกวันหมดเขต !" }]}>
-                    <DatePicker style={{ width: "100%" }} />
-                  </Form.Item>
-                </Col>
-
-                <Col xs={24} sm={12}>
-                  <Form.Item label="วันสิ้นสุด" name="end_date" rules={[{ required: true, message: "กรุณาเลือกวันหมดเขต !" }]}>
-                    <DatePicker style={{ width: "100%" }} />
-                  </Form.Item>
-                </Col>
-              </Row>
-            </Col>
-
-            {/* Promotion Description */}
-            <Col xs={24}>
-              <Form.Item label="คำอธิบายโปรโมชั่น" name="promotion_description" rules={[{ required: true, message: "กรุณากรอกคำอธิบายโปรโมชั่น !" }]}>
-                <Input.TextArea rows={4} />
-              </Form.Item>
-            </Col>
-
-            {/* Action Buttons */}
-            <Col xs={24} style={{ textAlign: "right" }}>
-              <Form.Item>
-                <Space>
-                  <Link to="/promotion">
-                    <Button>ยกเลิก</Button>
-                  </Link>
-                  <Button type="primary" htmlType="submit">บันทึกการแก้ไข</Button>
-                </Space>
+                    {fileList.length < 1 && (
+                      <div>
+                        <PlusOutlined />
+                        <div style={{ marginTop: 8 }}>อัพโหลด</div>
+                      </div>
+                    )}
+                  </Upload>
+                </ImgCrop>
               </Form.Item>
             </Col>
           </Row>
-        </Form>
-      </Card>
+
+          {/* Animated Form Wrapper */}
+          <animated.div style={formAnimation}>
+            <Form
+              name="promotionEdit"
+              form={form}
+              layout="vertical"
+              onFinish={onFinish}
+              autoComplete="off"
+              style={{
+                backgroundColor: "rgba(127, 107, 188, 0.3)",
+                padding: "20px",
+                borderRadius: "8px",
+              }}
+            >
+              <Row gutter={[16, 16]}>
+                {/* Promotion Code and Name */}
+                <Col xs={24}>
+                  <Row gutter={[16, 16]}>
+                    <Col xs={24} sm={12}>
+                      <Form.Item
+                        label="รหัสโปรโมชั่น"
+                        name="promotion_code"
+                        rules={[{ required: true, message: "กรุณากรอกรหัสโปรโมชั่น !" }, { max: 20, message: "รหัสโปรโมชั่นต้องไม่เกิน 20 ตัวอักษร !" }]}
+                      >
+                        <Input placeholder="กรอกรหัส เช่น NEWYEAR2024" />
+                      </Form.Item>
+                    </Col>
+
+                    <Col xs={24} sm={12}>
+                      <Form.Item label="ชื่อโปรโมชั่น" name="promotion_name" rules={[{ required: true, message: "กรุณากรอกชื่อโปรโมชั่น !" }]}>
+                        <Input />
+                      </Form.Item>
+                    </Col>
+                  </Row>
+                </Col>
+
+                {/* Discount Type and Amount */}
+                <Col xs={24}>
+                  <Row gutter={[16, 16]}>
+                    <Col xs={24} sm={12}>
+                      <Form.Item label="ประเภทส่วนลด" name="discount_type" rules={[{ required: true, message: "กรุณาเลือกประเภทส่วนลด !" }]}>
+                        <Select value={discountType} onChange={(value) => setDiscountType(value)}>
+                          <Select.Option value="amount">จำนวนเงิน (บาท)</Select.Option>
+                          <Select.Option value="percent">เปอร์เซ็นต์ (%)</Select.Option>
+                        </Select>
+                      </Form.Item>
+                    </Col>
+
+                    <Col xs={24} sm={12}>
+                      <Form.Item label={discountType === "amount" ? "ส่วนลด (บาท)" : "ส่วนลด (%)"} name="discount" rules={[{ required: true, message: "กรุณากรอกจำนวนส่วนลด !" }]}>
+                        <InputNumber min={0} max={discountType === "percent" ? 100 : 99999999} style={{ width: "100%" }} />
+                      </Form.Item>
+                    </Col>
+                  </Row>
+                </Col>
+
+                {/* Date and Description */}
+                <Col xs={24}>
+                  <Row gutter={[16, 16]}>
+                    <Col xs={24} sm={12}>
+                      <Form.Item label="วันที่เริ่มต้น" name="start_date" rules={[{ required: true, message: "กรุณากำหนดวันที่เริ่มต้น !" }]}>
+                        <DatePicker style={{ width: "100%" }} />
+                      </Form.Item>
+                    </Col>
+
+                    <Col xs={24} sm={12}>
+                      <Form.Item label="วันที่สิ้นสุด" name="end_date" rules={[{ required: true, message: "กรุณากำหนดวันที่สิ้นสุด !" }]}>
+                        <DatePicker style={{ width: "100%" }} />
+                      </Form.Item>
+                    </Col>
+                  </Row>
+                </Col>
+
+                <Col xs={24}>
+                  <Form.Item label="รายละเอียดโปรโมชั่น" name="promotion_description" rules={[{ required: true, message: "กรุณากรอกรายละเอียดโปรโมชั่น !" }]}>
+                    <Input.TextArea rows={4} />
+                  </Form.Item>
+                </Col>
+              </Row>
+
+              <Row justify="center" gutter={[16, 16]}>
+                <Col>
+                  <Link to="/promotion">
+                    <Button
+                      block
+                      style={{
+                        width: "150px",
+                        backgroundColor: "#f0f0f0",
+                        borderColor: "#d1d1d1",
+                        color: "#333",
+                      }}
+                    >
+                      ยกเลิก
+                    </Button>
+                  </Link>
+                </Col>
+                <Col>
+                  <Button
+                    type="primary"
+                    htmlType="submit"
+                    block
+                    style={{
+                      width: "150px",
+                      backgroundColor: "#9333EA",
+                      borderColor: "#9333EA",
+                      color: "#fff",
+                    }}
+                  >
+                    บันทึก
+                  </Button>
+                </Col>
+              </Row>
+            </Form>
+          </animated.div>
+        </Card>
+      </animated.div>
     </div>
   );
 }

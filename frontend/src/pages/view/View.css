@@ -1,99 +1,26 @@
-/* View.css */
-
-/* Coupon card with torn edges */
 .coupon-card {
-    background-color: #fff;
-    border-radius: 8px;
-    padding: 20px;
-    position: relative;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    display: flex;
-    align-items: center;
-    height: 100%;
-    overflow: hidden;  /* Prevents the jagged edges from overflowing */
-  }
-  
-  /* Torn edge effect on both sides of the coupon */
-  .coupon-card::before, .coupon-card::after {
-    content: '';
-    position: absolute;
-    top: 0;
-    width: 50px;  /* Width of the jagged edges */
-    height: 100%;
-    background-color: #f1f1f1;
-  }
-  
-  .coupon-card::before {
-    left: -50px;  /* Move the left side cutout to the left */
-    clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%, 0 75%, 100% 75%, 100% 50%, 0 50%, 0 0);
-  }
-  
-  .coupon-card::after {
-    right: -50px;  /* Move the right side cutout to the right */
-    clip-path: polygon(100% 0, 0 0, 0 100%, 100% 100%, 100% 75%, 0 75%, 0 50%, 100% 50%, 100% 0);
-  }
-  
-  /* The text and image content layout */
-  .coupon-card h3 {
-    margin-bottom: 10px;
-    font-size: 20px;
-    font-weight: bold;
-    color: #3d3d3d;
-  }
-  
-  .coupon-card p {
-    margin: 5px 0;
-    font-size: 14px;
-    line-height: 1.5;
-    color: #555;
-  }
-  
-  .coupon-card .ant-card-cover {
-    height: 150px; /* Adjust image height for consistency */
-    object-fit: cover;
-    border-radius: 8px;
-    margin-right: 15px;  /* Add space between image and text */
-  }
-  
-  /* Align image and text content */
-  .coupon-image {
-    flex: 0 0 30%;  /* Ensure the image occupies 30% of the space */
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100%;
-    border-radius: 8px;
-  }
-  
-  .coupon-details {
-    flex: 1;  /* Ensure details take up 70% of space */
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    padding-left: 15px;
-  }
-  
-  /* Hover effect */
-  .coupon-card:hover {
-    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
-    transform: translateY(-5px);
-    transition: all 0.3s ease;
-  }
-  
-  /* Mobile responsive: Ensure good spacing and alignment */
-  @media (max-width: 768px) {
-    .coupon-card {
-      flex-direction: column; /* Stack image and details vertically on small screens */
-    }
-  
-    .coupon-image {
-      width: 100%; /* Image takes up full width on mobile */
-      height: 200px; /* Fixed height for images */
-    }
-  
-    .coupon-details {
-      width: 100%; /* Details take full width on mobile */
-      padding-left: 0;
-    }
-  }
-  
+  background-color: rgba(255, 255, 255, 0.6); /* ใช้สี #C9BFE9 พร้อมความโปร่งใส */
+  border-radius: 8px;
+  padding: 20px;
+  position: relative;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  display: flex;
+  align-items: center;
+  height: 100%;
+  transition: transform 0.3s, opacity 0.3s;
+}
+
+.coupon-image {
+  flex: 0 0 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 200px;
+  border-radius: 8px;
+}
+
+.coupon-details {
+  flex: 1;
+  padding-left: 15px;
+  text-align: center;
+}

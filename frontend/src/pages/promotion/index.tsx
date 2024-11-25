@@ -6,11 +6,19 @@ import { GetPromotions, DeletePromotionById } from "../../services/https/index";
 import { PromotionInterface } from "../../interfaces/IPromotion";
 import { Link, useNavigate } from "react-router-dom";
 import dayjs from "dayjs";
+import { useSpring, animated } from "@react-spring/web"; // Import react-spring
 
 function Promotion() {
   const navigate = useNavigate();
   const [promotions, setPromotions] = useState<PromotionInterface[]>([]);
   const [messageApi, contextHolder] = message.useMessage();
+
+  // Animated Spring for table fade-in
+  const tableAnimation = useSpring({
+    opacity: 1,
+    from: { opacity: 0 },
+    config: { tension: 220, friction: 120 },
+  });
 
   // Columns for the table
   const columns: ColumnsType<PromotionInterface> = [
@@ -74,6 +82,7 @@ function Promotion() {
           danger
           icon={<DeleteOutlined />}
           onClick={() => deletePromotionById(record.ID!)} // ใช้ 'id' ตาม interface
+          style={{ borderColor: "#47456C", color: "#47456C" }} // สีปุ่มลบ
         >
           ลบ
         </Button>
@@ -91,7 +100,7 @@ function Promotion() {
               messageApi.error("ไม่พบข้อมูลโปรโมชั่นที่ต้องการแก้ไข");
             }
           }}
-          style={{ backgroundColor: "#575A83", borderColor: "#575A83" }}  // กำหนดสีปุ่ม
+          style={{ backgroundColor: "#575A83", borderColor: "#575A83" }} // สีปุ่มแก้ไข
         >
           แก้ไขข้อมูล
         </Button>
@@ -139,7 +148,7 @@ function Promotion() {
       {contextHolder}
       <Row>
         <Col span={12}>
-          <h2>จัดการโปรโมชั่น</h2>
+          <h2 style={{ color: "#7F6BCC" }}>จัดการโปรโมชั่น</h2> {/* สีหัวข้อ */}
         </Col>
         <Col span={12} style={{ textAlign: "right" }}>
           <Space>
@@ -147,7 +156,7 @@ function Promotion() {
               <Button
                 type="primary"
                 icon={<PlusOutlined />}
-                style={{ backgroundColor: "#9333EA", borderColor: "#9333EA" }}  // กำหนดสีปุ่ม
+                style={{ backgroundColor: "#9333EA", borderColor: "#9333EA" }}  // ปุ่มสร้าง
               >
                 สร้างข้อมูล
               </Button>
@@ -156,14 +165,16 @@ function Promotion() {
         </Col>
       </Row>
       <Divider />
-      <div style={{ marginTop: 20 }}>
-        <Table
-          rowKey="id"
-          columns={columns}
-          dataSource={promotions}
-          style={{ width: "100%" }}
-        />
-      </div>
+      <animated.div style={tableAnimation}>
+        <div style={{ marginTop: 20 }}>
+          <Table
+            rowKey="id"
+            columns={columns}
+            dataSource={promotions}
+            style={{ width: "100%" }}
+          />
+        </div>
+      </animated.div>
     </>
   );
 }
