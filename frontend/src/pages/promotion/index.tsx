@@ -1,24 +1,19 @@
 import { useState, useEffect } from "react";
-import { Space, Table, Button, Col, Row, Divider, message, Image } from "antd";
-import { PlusOutlined, DeleteOutlined } from "@ant-design/icons";
+import { Space, Table, Button, Col, Row, Divider, message, Image, Input } from "antd";
+import { PlusOutlined, DeleteOutlined, EditOutlined } from "@ant-design/icons";  // นำเข้า EditOutlined
 import type { ColumnsType } from "antd/es/table";
 import { GetPromotions, DeletePromotionById } from "../../services/https/index";
 import { PromotionInterface } from "../../interfaces/IPromotion";
 import { Link, useNavigate } from "react-router-dom";
 import dayjs from "dayjs";
-import { useSpring, animated } from "@react-spring/web"; // Import react-spring
+import { SearchOutlined } from "@ant-design/icons";
 
 function Promotion() {
   const navigate = useNavigate();
   const [promotions, setPromotions] = useState<PromotionInterface[]>([]);
+  const [filteredPromotions, setFilteredPromotions] = useState<PromotionInterface[]>([]);
   const [messageApi, contextHolder] = message.useMessage();
-
-  // Animated Spring for table fade-in
-  const tableAnimation = useSpring({
-    opacity: 1,
-    from: { opacity: 0 },
-    config: { tension: 220, friction: 120 },
-  });
+  const [searchTerm, setSearchTerm] = useState<string>("");
 
   // Columns for the table
   const columns: ColumnsType<PromotionInterface> = [
@@ -45,19 +40,38 @@ function Promotion() {
     },
     {
       title: "ประเภทส่วนลด",
-      dataIndex: "discount_type",
-      key: "discount_type",
-      render: (text) => (text === "amount" ? "จำนวนเงิน (บาท)" : "เปอร์เซ็นต์ (%)"),
+      dataIndex: "discount_type_id",
+      key: "discount_type_id",
+      render: (text) => {
+        if (text === 1) return "จำนวนเงิน (฿)";
+        if (text === 2) return "เปอร์เซ็นต์ (%)";
+        return "ไม่ระบุ"; // Fallback for any other values
+      },
     },
     {
-      title: "จำนวนส่วนลด",
+      title: "ส่วนลด ",
       dataIndex: "discount",
       key: "discount",
     },
     {
-      title: "วันเริ่มต้น",
-      key: "start_date",
-      render: (record) => <>{dayjs(record.start_date).format("DD/MM/YYYY")}</>,
+      title: "สถานะ",
+      dataIndex: "status_id",
+      key: "status_id",
+      render: (text) => {
+        if (text === 1) return "ใช้งานได้"; // Active
+        if (text === 2) return "ปิดการใช้งาน"; // Expired
+        return "ไม่ระบุ"; // Fallback for any other values
+      },
+    },
+    {
+      title: "จำนวนครั้งที่ใช้ได้",
+      dataIndex: "use_limit",
+      key: "use_limit",
+    },
+    {
+      title: "ระยะทาง",
+      dataIndex: "distance",
+      key: "distance",
     },
     {
       title: "วันหมดเขต",
@@ -69,7 +83,7 @@ function Promotion() {
       dataIndex: "promotion_description",
       key: "promotion_description",
       render: (text) => (
-        <div style={{ wordWrap: 'break-word', whiteSpace: 'normal', maxWidth: '200px' }}>
+        <div style={{ wordWrap: "break-word", whiteSpace: "normal", maxWidth: "200px" }}>
           {text || "-"}
         </div>
       ),
@@ -101,6 +115,7 @@ function Promotion() {
             }
           }}
           style={{ backgroundColor: "#575A83", borderColor: "#575A83" }} // สีปุ่มแก้ไข
+          icon={<EditOutlined />} // เพิ่มไอคอน EditOutlined
         >
           แก้ไขข้อมูล
         </Button>
@@ -114,6 +129,7 @@ function Promotion() {
       const res = await GetPromotions();
       if (res.status === 200) {
         setPromotions(res.data);
+        setFilteredPromotions(res.data); // Initially set filtered promotions to all promotions
       } else {
         setPromotions([]);
         messageApi.error(res.data.error);
@@ -138,6 +154,21 @@ function Promotion() {
     }
   };
 
+  // Handle search input change
+  const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    setSearchTerm(value);
+    filterPromotions(value);
+  };
+
+  // Filter promotions by code
+  const filterPromotions = (search: string) => {
+    const filtered = promotions.filter((promotion) =>
+      promotion.promotion_code.toLowerCase().includes(search.toLowerCase())
+    );
+    setFilteredPromotions(filtered);
+  };
+
   // Fetch data on component mount
   useEffect(() => {
     getPromotions();
@@ -152,11 +183,18 @@ function Promotion() {
         </Col>
         <Col span={12} style={{ textAlign: "right" }}>
           <Space>
+            <Input
+              placeholder="ค้นหารหัสโปรโมชั่น"
+              value={searchTerm}
+              onChange={handleSearch}
+              style={{ width: 250 }}
+              prefix={<SearchOutlined />} // ใส่ไอคอนในช่องค้นหา
+            />
             <Link to="/promotion/create">
               <Button
                 type="primary"
                 icon={<PlusOutlined />}
-                style={{ backgroundColor: "#9333EA", borderColor: "#9333EA" }}  // ปุ่มสร้าง
+                style={{ backgroundColor: "#9333EA", borderColor: "#9333EA" }} // ปุ่มสร้าง
               >
                 สร้างข้อมูล
               </Button>
@@ -165,16 +203,14 @@ function Promotion() {
         </Col>
       </Row>
       <Divider />
-      <animated.div style={tableAnimation}>
-        <div style={{ marginTop: 20 }}>
-          <Table
-            rowKey="id"
-            columns={columns}
-            dataSource={promotions}
-            style={{ width: "100%" }}
-          />
-        </div>
-      </animated.div>
+      <div style={{ marginTop: 20 }}>
+        <Table
+          rowKey="id"
+          columns={columns}
+          dataSource={filteredPromotions} // ใช้ข้อมูลที่กรองแล้ว
+          style={{ width: "100%" }}
+        />
+      </div>
     </>
   );
 }

@@ -3,6 +3,7 @@ import { PromotionInterface } from "../../interfaces/IPromotion"; // Import Inte
 import { UsersInterface } from "../../interfaces/IUser";
 import { SignInInterface } from "../../interfaces/Signln";
 
+
 const apiUrl = "http://localhost:8000";
 
 const Authorization = localStorage.getItem("token");
@@ -51,6 +52,30 @@ async function DeletePromotionById(id: string) {
     .then((res) => res)
     .catch((e) => e.response);
 }
+
+async function GetDiscountType() {
+  return await axios
+    .get(`${apiUrl}/DiscountType`, requestOptions)
+    .then((res) => res)
+    .catch((e) => e.response);
+}
+
+async function GetStatus() {
+  return await axios
+    .get(`${apiUrl}/status`, requestOptions)
+    .then((res) => res)
+    .catch((e) => e.response);
+}
+
+// แก้ไขฟังก์ชัน UsePromotion ให้รองรับ promotionId
+async function UsePromotion(promotionId: number) {
+  return await axios
+    .post(`${apiUrl}/zzz`, { promotion_id: promotionId }, requestOptions) // Send promotion_id in the body of the POST request
+    .then((res) => res)
+    .catch((e) => e.response);
+}
+
+
 
 // Existing Functions (Users, Gender, etc.)
 async function SignIn(data: SignInInterface) {
@@ -116,4 +141,7 @@ export {
   CreatePromotion,
   UpdatePromotionById,
   DeletePromotionById,
+  GetDiscountType,
+  GetStatus,
+  UsePromotion,
 };

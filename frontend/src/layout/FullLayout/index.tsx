@@ -1,30 +1,28 @@
 import React, { useState } from "react";
-
 import { Routes, Route, Link } from "react-router-dom";
-
 import "../../App.css";
-
-import { UserOutlined, DashboardOutlined } from "@ant-design/icons";
-
+import {
+  UserOutlined,
+  HomeOutlined,
+  GiftOutlined,
+  EyeOutlined,
+  LogoutOutlined,
+  EditOutlined,
+} from "@ant-design/icons";
 import { Breadcrumb, Layout, Menu, Button, message } from "antd";
-
 import logo from "../../assets/logo.png";
-
 import Dashboard from "../../pages/dashboard";
-
 import Customer from "../../pages/customer";
-
 import CustomerCreate from "../../pages/customer/create";
-
 import CustomerEdit from "../../pages/customer/edit";
-
-//promotion
+// promotion
 import Promotion from "../../pages/promotion";
 import PromotionCreate from "../../pages/promotion/create";
 import PromotionEdit from "../../pages/promotion/edit";
-//view
+// view
 import View from "../../pages/view";
 
+import Zzz from "../../pages/zzz";
 
 const { Header, Content, Footer, Sider } = Layout;
 
@@ -53,7 +51,7 @@ const FullLayout: React.FC = () => {
         collapsible
         collapsed={collapsed}
         onCollapse={(value) => setCollapsed(value)}
-        style={{ background: "#8792E7" }} // เปลี่ยนสีพื้นหลังของ Sider
+        style={{ background: "#8792E7" }}
       >
         <div
           style={{
@@ -84,9 +82,9 @@ const FullLayout: React.FC = () => {
                 key="dashboard"
                 onClick={() => setCurrentPage("dashboard")}
               >
-                <Link to="/" style={{ color: "#000" }}> {/* เปลี่ยนสีข้อความเป็นสีดำ */}
-                  <DashboardOutlined />
-                  <span>แดชบอร์ด</span>
+                <Link to="/" style={{ color: "#000" }}>
+                  <HomeOutlined style={{ marginRight: "8px" }} />
+                  <span> Home </span>
                 </Link>
               </Menu.Item>
 
@@ -94,19 +92,18 @@ const FullLayout: React.FC = () => {
                 key="customer"
                 onClick={() => setCurrentPage("customer")}
               >
-                <Link to="/customer" style={{ color: "#000" }}> {/* เปลี่ยนสีข้อความเป็นสีดำ */}
-                  <UserOutlined />
-                  <span>ข้อมูลสมาชิก</span>
+                <Link to="/customer" style={{ color: "#000" }}>
+                  <UserOutlined style={{ marginRight: "8px" }} />
+                  <span> User </span>
                 </Link>
               </Menu.Item>
-
 
               <Menu.Item
                 key="promotion"
                 onClick={() => setCurrentPage("promotion")}
               >
-                <Link to="/promotion" style={{ color: "#000" }}> {/* เปลี่ยนสีข้อความเป็นสีดำ */}
-                  <UserOutlined />
+                <Link to="/promotion" style={{ color: "#000" }}>
+                  <EditOutlined style={{ marginRight: "8px" }} />
                   <span>Promotion</span>
                 </Link>
               </Menu.Item>
@@ -115,13 +112,24 @@ const FullLayout: React.FC = () => {
                 key="view"
                 onClick={() => setCurrentPage("view")}
               >
-                <Link to="/view" style={{ color: "#000" }}> {/* เปลี่ยนสีข้อความเป็นสีดำ */}
-                  <UserOutlined />
-                  <span>Promotion View</span>
+                <Link to="/view" style={{ color: "#000" }}>
+                  <GiftOutlined style={{ marginRight: "8px" }} />
+                  <span>Promotion All</span>
                 </Link>
               </Menu.Item>
-            </Menu>
 
+              <Menu.Item
+                key="zzz"
+                onClick={() => setCurrentPage("zzz")}
+              >
+                <Link to="/zzz" style={{ color: "#000" }}>
+                  <EyeOutlined style={{ marginRight: "8px" }} />
+                  <span>Test Promotion</span>
+                </Link>
+              </Menu.Item>
+
+            </Menu>
+            
           </div>
 
           <Button
@@ -131,8 +139,12 @@ const FullLayout: React.FC = () => {
               background: "#DAD6EF",
               color: "#000",
               border: "none",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
             }}
           >
+            <LogoutOutlined style={{ marginRight: "8px" }} />
             ออกจากระบบ
           </Button>
         </div>
@@ -154,14 +166,13 @@ const FullLayout: React.FC = () => {
               <Route path="/customer" element={<Customer />} />
               <Route path="/customer/create" element={<CustomerCreate />} />
               <Route path="/customer/edit/:id" element={<CustomerEdit />} />
-
-              //promotion
+              {/* promotion */}
               <Route path="/promotion" element={<Promotion />} />
               <Route path="/promotion/create" element={<PromotionCreate />} />
               <Route path="/promotion/edit/:id" element={<PromotionEdit />} />
-              //View
+              {/* view */}
               <Route path="/view" element={<View />} />
-
+              <Route path="/zzz" element={<Zzz />} />
             </Routes>
           </div>
         </Content>

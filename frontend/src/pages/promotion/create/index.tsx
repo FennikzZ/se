@@ -6,17 +6,32 @@ import { CreatePromotion } from "../../../services/https";
 import { useNavigate, Link } from "react-router-dom";
 import ImgCrop from "antd-img-crop";
 import { useSpring, animated } from "@react-spring/web"; // import react-spring
+import { FileImageOutlined } from "@ant-design/icons";
+
 
 function PromotionCreate() {
   const navigate = useNavigate();
   const [messageApi, contextHolder] = message.useMessage();
   const [discountType, setDiscountType] = useState<"amount" | "percent">("amount");
+  const [status, setStatus] = useState<"active" | "expired">("active");
   const [fileList, setFileList] = useState<any>([]);
+
+  // สมมติว่าเรามี ID สำหรับ discount_type และ status ที่เก็บในตัวแปร
+  const discountTypeMap = {
+    amount: 1,   // สมมติว่า "amount" คือ ID 1
+    percent: 2,  // สมมติว่า "percent" คือ ID 2
+  };
+
+  const statusMap = {
+    active: 1,   // สมมติว่า "active" คือ ID 1
+    expired: 2,  // สมมติว่า "expired" คือ ID 2
+  };
 
   const onFinish = async (values: PromotionInterface) => {
     const promotionData = {
       ...values,
-      discount_type: discountType,
+      discount_type_id: discountTypeMap[discountType], // ส่ง discount_type_id
+      status_id: statusMap[status], // ส่ง status_id
       photo: fileList.length > 0 ? fileList[0].thumbUrl : null,
     };
 
@@ -116,7 +131,7 @@ function PromotionCreate() {
                   >
                     {fileList.length < 1 && (
                       <div>
-                        <PlusOutlined />
+                        <FileImageOutlined style={{ fontSize: "34px" }} />
                         <div style={{ marginTop: 8 }}>อัพโหลด</div>
                       </div>
                     )}
@@ -164,7 +179,7 @@ function PromotionCreate() {
                 <Col xs={24}>
                   <Row gutter={[16, 16]}>
                     <Col xs={24} sm={12}>
-                      <Form.Item label="ประเภทส่วนลด" name="discount_type" rules={[{ required: true, message: "กรุณาเลือกประเภทส่วนลด !" }]}>
+                      <Form.Item label="ประเภทส่วนลด" name="discount_type_id" rules={[{ required: true, message: "กรุณาเลือกประเภทส่วนลด !" }]}>
                         <Select value={discountType} onChange={(value) => setDiscountType(value)}>
                           <Select.Option value="amount">จำนวนเงิน (บาท)</Select.Option>
                           <Select.Option value="percent">เปอร์เซ็นต์ (%)</Select.Option>
@@ -180,12 +195,32 @@ function PromotionCreate() {
                   </Row>
                 </Col>
 
-                {/* จำนวนครั้งที่ใช้ได้ และ วันหมดเขต */}
+                {/* สถานะโปรโมชั่น และ จำนวนครั้งที่ใช้ได้ */}
                 <Col xs={24}>
                   <Row gutter={[16, 16]}>
                     <Col xs={24} sm={12}>
-                      <Form.Item label="วันเริ่มโปรโมชั่น" name="start_date" rules={[{ required: true, message: "กรุณาเลือกวันเริ่มโปรโมชั่น !" }]}>
-                        <DatePicker style={{ width: "100%" }} />
+                      <Form.Item label="สถานะโปรโมชั่น" name="status_id" rules={[{ required: true, message: "กรุณาเลือกสถานะโปรโมชั่น !" }]}>
+                        <Select value={status} onChange={(value) => setStatus(value)}>
+                          <Select.Option value="active">ใช้งานได้</Select.Option>
+                          <Select.Option value="expired">ปิดใช้งาน</Select.Option>
+                        </Select>
+                      </Form.Item>
+                    </Col>
+
+                    <Col xs={24} sm={12}>
+                      <Form.Item label="จำนวนครั้งที่ใช้ได้" name="use_limit" rules={[{ required: true, message: "กรุณากรอกจำนวนครั้งที่ใช้ได้ !" }]}>
+                        <InputNumber min={1} style={{ width: "100%" }} />
+                      </Form.Item>
+                    </Col>
+                  </Row>
+                </Col>
+
+                {/* ระยะทางสูงสุด */}
+                <Col xs={24}>
+                  <Row gutter={[16, 16]}>
+                    <Col xs={24} sm={12}>
+                      <Form.Item label="ระยะทาง (กิโลเมตร)" name="distance">
+                        <InputNumber min={0} style={{ width: "100%" }} />
                       </Form.Item>
                     </Col>
 

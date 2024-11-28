@@ -13,13 +13,14 @@ import {
   Select,
   Upload,
 } from "antd";
-import { PlusOutlined } from "@ant-design/icons";
 import { PromotionInterface } from "../../../interfaces/IPromotion";
 import { GetPromotionById, UpdatePromotionById } from "../../../services/https";
 import { useNavigate, Link, useParams } from "react-router-dom";
 import dayjs from "dayjs";
 import ImgCrop from "antd-img-crop"; // Image crop for upload
 import { useSpring, animated } from "@react-spring/web"; // Animation
+import { FileImageOutlined } from "@ant-design/icons";
+
 
 function PromotionEdit() {
   const navigate = useNavigate();
@@ -27,6 +28,7 @@ function PromotionEdit() {
   const [messageApi, contextHolder] = message.useMessage();
   const [fileList, setFileList] = useState<any>([]); // Store uploaded files
   const [discountType, setDiscountType] = useState<"amount" | "percent">("amount");
+  const [status, setStatus] = useState<"active" | "expired">("active");
   const [form] = Form.useForm();
 
   // Fetch promotion data by ID
@@ -38,13 +40,16 @@ function PromotionEdit() {
       form.setFieldsValue({
         promotion_code: promotion.promotion_code || "",
         promotion_name: promotion.promotion_name || "",
-        discount_type: promotion.discount_type || "amount",
+        discount_type_id: promotion.discount_type_id === 2 ? "percent" : "amount", // Map to string
         discount: promotion.discount || "",
-        start_date: promotion.start_date ? dayjs(promotion.start_date) : null,
+        status_id: promotion.status_id === 1 ? "active" : "expired", // Map to string
+        use_limit: promotion.use_limit || 0,  // Default to 0 if not provided
+        distance: promotion.distance || null,  // Optional distance
         end_date: promotion.end_date ? dayjs(promotion.end_date) : null,
         promotion_description: promotion.promotion_description || "",
       });
-      setDiscountType(promotion.discount_type || "amount");
+      setDiscountType(promotion.discount_type_id === 2 ? "percent" : "amount");
+      setStatus(promotion.status_id === 1 ? "active" : "expired");
       setFileList(promotion.photo ? [{ url: promotion.photo }] : []);
     } else {
       messageApi.open({
@@ -61,7 +66,8 @@ function PromotionEdit() {
   const onFinish = async (values: PromotionInterface) => {
     const promotionData = {
       ...values,
-      discount_type: discountType,
+      discount_type_id: discountType === "percent" ? 2 : 1, // Map to numeric value
+      status_id: status === "active" ? 1 : 2, // Map to numeric value
       photo: fileList.length > 0 ? fileList[0].thumbUrl : null,
     };
 
@@ -165,7 +171,7 @@ function PromotionEdit() {
                   >
                     {fileList.length < 1 && (
                       <div>
-                        <PlusOutlined />
+                        <FileImageOutlined style={{ fontSize: "34px" }} />
                         <div style={{ marginTop: 8 }}>อัพโหลด</div>
                       </div>
                     )}
@@ -215,7 +221,7 @@ function PromotionEdit() {
                 <Col xs={24}>
                   <Row gutter={[16, 16]}>
                     <Col xs={24} sm={12}>
-                      <Form.Item label="ประเภทส่วนลด" name="discount_type" rules={[{ required: true, message: "กรุณาเลือกประเภทส่วนลด !" }]}>
+                      <Form.Item label="ประเภทส่วนลด" name="discount_type_id" rules={[{ required: true, message: "กรุณาเลือกประเภทส่วนลด !" }]}>
                         <Select value={discountType} onChange={(value) => setDiscountType(value)}>
                           <Select.Option value="amount">จำนวนเงิน (บาท)</Select.Option>
                           <Select.Option value="percent">เปอร์เซ็นต์ (%)</Select.Option>
@@ -231,23 +237,46 @@ function PromotionEdit() {
                   </Row>
                 </Col>
 
-                {/* Date and Description */}
+                {/* New Row for Status and Use Limit */}
                 <Col xs={24}>
                   <Row gutter={[16, 16]}>
                     <Col xs={24} sm={12}>
-                      <Form.Item label="วันที่เริ่มต้น" name="start_date" rules={[{ required: true, message: "กรุณากำหนดวันที่เริ่มต้น !" }]}>
-                        <DatePicker style={{ width: "100%" }} />
+                      <Form.Item label="สถานะโปรโมชั่น" name="status_id" rules={[{ required: true, message: "กรุณาเลือกสถานะโปรโมชั่น !" }]}>
+                        <Select value={status} onChange={(value) => setStatus(value)}>
+                          <Select.Option value="active">ใช้งานได้</Select.Option>
+                          <Select.Option value="expired">ปิดใช้งาน</Select.Option>
+                        </Select>
                       </Form.Item>
                     </Col>
 
                     <Col xs={24} sm={12}>
-                      <Form.Item label="วันที่สิ้นสุด" name="end_date" rules={[{ required: true, message: "กรุณากำหนดวันที่สิ้นสุด !" }]}>
-                        <DatePicker style={{ width: "100%" }} />
+                      <Form.Item label="จำนวนครั้งที่ใช้ได้" name="use_limit" rules={[{ required: true, message: "กรุณากรอกจำนวนครั้งที่ใช้ได้ !" }]}>
+                        <InputNumber min={0} max={100} style={{ width: "100%" }} />
                       </Form.Item>
                     </Col>
                   </Row>
                 </Col>
 
+                {/* New Row for End Date, Distance, Status and Use Limit */}
+                <Col xs={24}>
+                  <Row gutter={[16, 16]}>
+                    <Col xs={24} sm={12}>
+                      <Form.Item label="วันหมดเขต" name="end_date" rules={[{ required: true, message: "กรุณากำหนดวันที่สิ้นสุด !" }]}>
+                        <DatePicker style={{ width: "100%" }} />
+                      </Form.Item>
+                    </Col>
+
+                    <Col xs={24} sm={12}>
+                      <Form.Item label="ระยะทางสูงสุด (กิโลเมตร)" name="distance">
+                        <InputNumber min={0} max={1000} style={{ width: "100%" }} />
+                      </Form.Item>
+                    </Col>
+                  </Row>
+                </Col>
+
+                
+
+                {/* Description */}
                 <Col xs={24}>
                   <Form.Item label="รายละเอียดโปรโมชั่น" name="promotion_description" rules={[{ required: true, message: "กรุณากรอกรายละเอียดโปรโมชั่น !" }]}>
                     <Input.TextArea rows={4} />

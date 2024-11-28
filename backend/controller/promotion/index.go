@@ -2,7 +2,6 @@ package promotion
 
 import (
 	"net/http"
-
 	"github.com/gin-gonic/gin"
 	"example.com/sa-67-example/config"
 	"example.com/sa-67-example/entity"
@@ -14,8 +13,8 @@ func GetAllPromotion(c *gin.Context) {
 
 	db := config.DB()
 
-	// ดึงข้อมูลโปรโมชั่นทั้งหมด
-	results := db.Find(&promotions)
+	// ดึงข้อมูลโปรโมชั่นทั้งหมด พร้อมข้อมูล DiscountType และ Status
+	results := db.Preload("DiscountType").Preload("Status").Find(&promotions)
 
 	if results.Error != nil {
 		c.JSON(http.StatusNotFound, gin.H{"error": results.Error.Error()})
@@ -32,17 +31,11 @@ func GetPromotion(c *gin.Context) {
 
 	db := config.DB()
 
-	// ค้นหาโปรโมชั่นโดย ID
-	results := db.First(&promotion, ID)
+	// ค้นหาโปรโมชั่นโดย ID พร้อมข้อมูล DiscountType และ Status
+	results := db.Preload("DiscountType").Preload("Status").First(&promotion, ID)
 
 	if results.Error != nil {
 		c.JSON(http.StatusNotFound, gin.H{"error": results.Error.Error()})
-		return
-	}
-
-	// ตรวจสอบว่ามีโปรโมชั่นหรือไม่
-	if promotion.ID == 0 {
-		c.JSON(http.StatusNoContent, gin.H{})
 		return
 	}
 
@@ -56,6 +49,12 @@ func CreatePromotion(c *gin.Context) {
 	// รับข้อมูล JSON ที่ส่งมาจาก client
 	if err := c.ShouldBindJSON(&promotion); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Bad request, unable to map payload"})
+		return
+	}
+
+	// ตรวจสอบว่า StatusID ถูกส่งมาหรือไม่
+	if promotion.StatusID == 0 {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "StatusID is required"})
 		return
 	}
 
@@ -112,4 +111,31 @@ func DeletePromotion(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, gin.H{"message": "Promotion deleted successfully"})
+}
+
+// UsePromotion - ฟังก์ชันสำหรับเพิ่ม use_count ไป 1 เมื่อใช้โปรโมชั่น
+func UsePromotion(c *gin.Context) {
+	// รับ ID ของโปรโมชั่นจาก URL
+	id := c.Param("id")
+	var promotion entity.Promotion
+
+	db := config.DB()
+
+	// ค้นหาข้อมูลโปรโมชั่นโดยใช้ ID
+	if result := db.First(&promotion, id); result.Error != nil {
+		c.JSON(http.StatusNotFound, gin.H{"error": "Promotion not found"})
+		return
+	}
+
+	// เพิ่ม use_count ไป 1
+	promotion.UseCount++
+
+	// บันทึกข้อมูลที่อัปเดตลงในฐานข้อมูล
+	if result := db.Save(&promotion); result.Error != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to update use count"})
+		return
+	}
+
+	// ส่งผลลัพธ์กลับ
+	c.JSON(http.StatusOK, gin.H{"message": "Promotion used successfully", "promotion": promotion})
 }

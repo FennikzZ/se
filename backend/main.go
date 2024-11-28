@@ -2,22 +2,19 @@ package main
 
 import (
 	"net/http"
-
 	"github.com/gin-gonic/gin"
-
 	"example.com/sa-67-example/config"
-
 	"example.com/sa-67-example/controller/genders"
+	"example.com/sa-67-example/controller/promotion"  // เพิ่มการ import ฟังก์ชัน UsePromotion จาก package promotion
+	"example.com/sa-67-example/controller/discounttype"
+	"example.com/sa-67-example/controller/status"
 	"example.com/sa-67-example/controller/users"
-	"example.com/sa-67-example/controller/promotion" // นำเข้าคอนโทรลเลอร์ของโปรโมชั่น
-
 	"example.com/sa-67-example/middlewares"
 )
 
 const PORT = "8000"
 
 func main() {
-
 	// open connection database
 	config.ConnectionDB()
 
@@ -33,7 +30,6 @@ func main() {
 	r.POST("/signin", users.SignIn)
 
 	router := r.Group("/")
-
 	{
 		router.Use(middlewares.Authorizes())
 
@@ -44,12 +40,19 @@ func main() {
 		router.DELETE("/user/:id", users.Delete)
 
 		// Promotion Routes
-		router.GET("/promotions", promotion.GetAllPromotion)       // ดึงข้อมูลโปรโมชั่นทั้งหมด
-		router.GET("/promotion/:id", promotion.GetPromotion)       // ดึงข้อมูลโปรโมชั่นตาม ID
-		router.POST("/promotion", promotion.CreatePromotion)       // สร้างโปรโมชั่นใหม่
-		router.PUT("/promotion/:id", promotion.UpdatePromotion)    // แก้ไขข้อมูลโปรโมชั่น
-		router.DELETE("/promotion/:id", promotion.DeletePromotion) // ลบโปรโมชั่น
+		router.GET("/promotions", promotion.GetAllPromotion)
+		router.GET("/promotion/:id", promotion.GetPromotion)
+		router.POST("/promotion", promotion.CreatePromotion)
+		router.PUT("/promotion/:id", promotion.UpdatePromotion)
+		router.DELETE("/promotion/:id", promotion.DeletePromotion)
+
 	}
+
+	r.GET("/discounttype", discounttype.GetAllD) // ใช้ฟังก์ชัน GetAllD จาก package discounttype
+
+	r.GET("/statuses", status.GetAllStatus) // เพิ่มเส้นทางสำหรับ Status
+
+	r.POST("/zzz", promotion.UsePromotion)  // เรียกใช้ฟังก์ชัน UsePromotion จาก package promotion
 
 	// Genders Route
 	r.GET("/genders", genders.GetAll)
