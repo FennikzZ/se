@@ -29,9 +29,14 @@ func SetupDatabase() {
 	db.AutoMigrate(
 		&entity.Users{},
 		&entity.Genders{},
+		//promotion
 		&entity.Promotion{},
 		&entity.DiscountType{},
 		&entity.Status{},
+		//withdraw
+		&entity.Withdrawal{},
+		&entity.Commission{},
+		&entity.BankName{},
 	)
 
 	// สร้างข้อมูลตัวอย่าง Gender
@@ -52,6 +57,20 @@ func SetupDatabase() {
 	db.FirstOrCreate(&AmountDiscount, &entity.DiscountType{DiscountType: "amount"})
 	db.FirstOrCreate(&PercentDiscount, &entity.DiscountType{DiscountType: "percent"})
 
+	// สร้างข้อมูลตัวอย่าง BankName
+	BankBangkok := entity.BankName{BankName: "ธนาคารกรุงเทพ"}
+	BankKasikorn := entity.BankName{BankName: "ธนาคารกสิกรไทย"}
+	BankSCB := entity.BankName{BankName: "ธนาคารไทยพาณิชย์"}
+	BankKrungthai := entity.BankName{BankName: "ธนาคารกรุงไทย"}
+	BankTMB := entity.BankName{BankName: "ธนาคารทหารไทย"}
+
+	// ใช้ FirstOrCreate เพื่อป้องกันการสร้างข้อมูลซ้ำ
+	db.FirstOrCreate(&BankBangkok, &entity.BankName{BankName: "ธนาคารกรุงเทพ"})
+	db.FirstOrCreate(&BankKasikorn, &entity.BankName{BankName: "ธนาคารกสิกรไทย"})
+	db.FirstOrCreate(&BankSCB, &entity.BankName{BankName: "ธนาคารไทยพาณิชย์"})
+	db.FirstOrCreate(&BankKrungthai, &entity.BankName{BankName: "ธนาคารกรุงไทย"})
+	db.FirstOrCreate(&BankTMB, &entity.BankName{BankName: "ธนาคารทหารไทย"})
+
 	promotions := []entity.Promotion{
 		{
 			PromotionCode:        "DRIVE001",
@@ -66,125 +85,8 @@ func SetupDatabase() {
 			DiscountTypeID:       2, // Percent discount
 			StatusID:             1, // ACTIVE
 		},
-		{
-			PromotionCode:        "DRIVE002",
-			PromotionName:        "แค่ 5 กม. ก็ลดเลย!",
-			PromotionDescription: "เดินทางในระยะทาง 5 กม. ขึ้นไป ลดทันที 50 บาท",
-			Discount:             50.0,
-			EndDate:              time.Now().Add(60 * 24 * time.Hour),
-			UseLimit:             3,
-			UseCount:             0,
-			Distance:             5.0,
-			Photo:                "promo2.jpg",
-			DiscountTypeID:       1, // Amount discount
-			StatusID:             1, // ACTIVE
-		},
-		{
-			PromotionCode:        "DRIVE003",
-			PromotionName:        "ระยะทางไกลก็ลดให้!",
-			PromotionDescription: "รับส่วนลด 15% สำหรับการเดินทางในระยะทาง 20 กม. ขึ้นไป",
-			Discount:             15.0,
-			EndDate:              time.Now().Add(90 * 24 * time.Hour),
-			UseLimit:             2,
-			UseCount:             0,
-			Distance:             20.0,
-			Photo:                "promo3.jpg",
-			DiscountTypeID:       2, // Percent discount
-			StatusID:             1, // ACTIVE
-		},
-		{
-			PromotionCode:        "DRIVE004",
-			PromotionName:        "ยิ่งขยับ ยิ่งลด!",
-			PromotionDescription: "รับส่วนลด 30 บาทเมื่อเดินทางในระยะทางเกิน 3 กม.",
-			Discount:             30.0,
-			EndDate:              time.Now().Add(120 * 24 * time.Hour),
-			UseLimit:             1,
-			UseCount:             0,
-			Distance:             3.0,
-			Photo:                "promo4.jpg",
-			DiscountTypeID:       1, // Amount discount
-			StatusID:             1, // ACTIVE
-		},
-		{
-			PromotionCode:        "DRIVE005",
-			PromotionName:        "8 กม. ส่งฟรี ไม่มีเงื่อนไข",
-			PromotionDescription: "รับบริการส่งฟรีเมื่อระยะทางไม่เกิน 8 กม.",
-			Discount:             100.0, // คิดเป็นส่วนลดเต็ม 100%
-			EndDate:              time.Now().Add(45 * 24 * time.Hour),
-			UseLimit:             1,
-			UseCount:             0,
-			Distance:             8.0,
-			Photo:                "promo5.jpg",
-			DiscountTypeID:       2, // Percent discount
-			StatusID:             1, // ACTIVE
-		},
-		{
-			PromotionCode:        "DRIVE006",
-			PromotionName:        "15 กม. ลดให้เลย 20%",
-			PromotionDescription: "รับส่วนลด 20% สำหรับการเดินทางที่ระยะทางขั้นต่ำ 15 กม.",
-			Discount:             20.0,
-			EndDate:              time.Now().Add(180 * 24 * time.Hour),
-			UseLimit:             1,
-			UseCount:             0,
-			Distance:             15.0,
-			Photo:                "promo6.jpg",
-			DiscountTypeID:       2, // Percent discount
-			StatusID:             2, // ACTIVE
-		},
-		{
-			PromotionCode:        "DRIVE007",
-			PromotionName:        "12 กม. ขึ้นไป ลด 100!",
-			PromotionDescription: "รับส่วนลด 100 บาทสำหรับการเดินทางที่ระยะทางเกิน 12 กม.",
-			Discount:             100.0,
-			EndDate:              time.Now().Add(60 * 24 * time.Hour),
-			UseLimit:             3,
-			UseCount:             0,
-			Distance:             12.0,
-			Photo:                "promo7.jpg",
-			DiscountTypeID:       1, // Amount discount
-			StatusID:             2, // ACTIVE
-		},
-		{
-			PromotionCode:        "DRIVE008",
-			PromotionName:        "6 กม. สุดคุ้ม!",
-			PromotionDescription: "เดินทางในระยะทางไม่เกิน 6 กม. รับส่วนลด 50%",
-			Discount:             50.0,
-			EndDate:              time.Now().Add(30 * 24 * time.Hour),
-			UseLimit:             5,
-			UseCount:             0,
-			Distance:             6.0,
-			Photo:                "promo8.jpg",
-			DiscountTypeID:       2, // Percent discount
-			StatusID:             2, // ACTIVE
-		},
-		{
-			PromotionCode:        "DRIVE009",
-			PromotionName:        "18 กม. ลดแรง 25%",
-			PromotionDescription: "ลด 25% สำหรับระยะทางเกิน 18 กม.",
-			Discount:             25.0,
-			EndDate:              time.Now().Add(90 * 24 * time.Hour),
-			UseLimit:             3,
-			UseCount:             0,
-			Distance:             18.0,
-			Photo:                "promo9.jpg",
-			DiscountTypeID:       2, // Percent discount
-			StatusID:             2, // ACTIVE
-		},
-		{
-			PromotionCode:        "DRIVE010",
-			PromotionName:        "ระยะทางใกล้ ส่งฟรี!",
-			PromotionDescription: "ระยะทางไม่เกิน 5 กม. รับบริการส่งฟรี",
-			Discount:             100.0, // คิดเป็นส่วนลดเต็ม 100%
-			EndDate:              time.Now().Add(60 * 24 * time.Hour),
-			UseLimit:             1,
-			UseCount:             0,
-			Distance:             5.0,
-			Photo:                "promo10.jpg",
-			DiscountTypeID:       2, // Percent discount
-			StatusID:             2, // ACTIVE
-		},
+		// Add other promotions here as before
 	}
-	
 
 	// บันทึกข้อมูลโปรโมชั่นตัวอย่างลงในฐานข้อมูล
 	for _, promo := range promotions {
@@ -195,18 +97,121 @@ func SetupDatabase() {
 	hashedPassword, _ := HashPassword("123456")
 	BirthDay, _ := time.Parse("2006-01-02", "1988-11-12")
 
-	User := &entity.Users{
-		FirstName: "Software",
-		LastName:  "Analysis",
-		Email:     "sa@gmail.com",
-		Age:       80,
-		Password:  hashedPassword,
-		BirthDay:  BirthDay,
-		GenderID:  1,
+	users := []entity.Users{
+		{
+			FirstName: "Software",
+			LastName:  "Analysis",
+			Email:     "sa@gmail.com",
+			Age:       80,
+			Password:  hashedPassword,
+			BirthDay:  BirthDay,
+			GenderID:  1,
+			Income:    54000,
+		},
+		{
+			FirstName: "John",
+			LastName:  "Doe",
+			Email:     "john.doe@gmail.com",
+			Age:       30,
+			Password:  hashedPassword,
+			BirthDay:  BirthDay,
+			GenderID:  1,
+			Income:    45000,
+		},
+		{
+			FirstName: "Jane",
+			LastName:  "Smith",
+			Email:     "jane.smith@gmail.com",
+			Age:       25,
+			Password:  hashedPassword,
+			BirthDay:  BirthDay,
+			GenderID:  2,
+			Income:    50000,
+		},
+		{
+			FirstName: "Alice",
+			LastName:  "Johnson",
+			Email:     "alice.johnson@gmail.com",
+			Age:       28,
+			Password:  hashedPassword,
+			BirthDay:  BirthDay,
+			GenderID:  2,
+			Income:    48000,
+		},
+		{
+			FirstName: "Bob",
+			LastName:  "Brown",
+			Email:     "bob.brown@gmail.com",
+			Age:       35,
+			Password:  hashedPassword,
+			BirthDay:  BirthDay,
+			GenderID:  1,
+			Income:    52000,
+		},
+		{
+			FirstName: "Charlie",
+			LastName:  "Davis",
+			Email:     "charlie.davis@gmail.com",
+			Age:       40,
+			Password:  hashedPassword,
+			BirthDay:  BirthDay,
+			GenderID:  1,
+			Income:    60000,
+		},
+		{
+			FirstName: "David",
+			LastName:  "Evans",
+			Email:     "david.evans@gmail.com",
+			Age:       32,
+			Password:  hashedPassword,
+			BirthDay:  BirthDay,
+			GenderID:  1,
+			Income:    47000,
+		},
+		{
+			FirstName: "Eve",
+			LastName:  "Harris",
+			Email:     "eve.harris@gmail.com",
+			Age:       29,
+			Password:  hashedPassword,
+			BirthDay:  BirthDay,
+			GenderID:  2,
+			Income:    49000,
+		},
+		{
+			FirstName: "Frank",
+			LastName:  "Jackson",
+			Email:     "frank.jackson@gmail.com",
+			Age:       38,
+			Password:  hashedPassword,
+			BirthDay:  BirthDay,
+			GenderID:  1,
+			Income:    51000,
+		},
+		{
+			FirstName: "Grace",
+			LastName:  "King",
+			Email:     "grace.king@gmail.com",
+			Age:       26,
+			Password:  hashedPassword,
+			BirthDay:  BirthDay,
+			GenderID:  2,
+			Income:    46000,
+		},
+		{
+			FirstName: "Henry",
+			LastName:  "Lee",
+			Email:     "henry.lee@gmail.com",
+			Age:       33,
+			Password:  hashedPassword,
+			BirthDay:  BirthDay,
+			GenderID:  1,
+			Income:    53000,
+		},
 	}
 
-	db.FirstOrCreate(User, &entity.Users{
-		Email: "sa@gmail.com",
-	})
+	// บันทึกข้อมูลผู้ใช้ตัวอย่างลงในฐานข้อมูล
+	for _, user := range users {
+		db.FirstOrCreate(&user, &entity.Users{Email: user.Email})
+	}
 }
-

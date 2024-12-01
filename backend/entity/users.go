@@ -1,32 +1,31 @@
 package entity
 
-
 import (
+	"time"
 
-   "time"
-
-   "gorm.io/gorm"
-
+	"gorm.io/gorm"
 )
 
 type Users struct {
+	gorm.Model
 
-   gorm.Model
+	FirstName string `json:"first_name"`
 
-   FirstName string    `json:"first_name"`
+	LastName string `json:"last_name"`
 
-   LastName  string    `json:"last_name"`
+	Email string `json:"email"`
 
-   Email     string    `json:"email"`
+	Age uint8 `json:"age"`
 
-   Age       uint8     `json:"age"`
+	Password string `json:"-"`
 
-   Password  string    `json:"-"`
+	BirthDay time.Time `json:"birthday"`
 
-   BirthDay  time.Time `json:"birthday"`
+	GenderID uint `json:"gender_id"`
 
-   GenderID  uint      `json:"gender_id"`
+	Gender *Genders `gorm:"foreignKey: gender_id" json:"gender"`
 
-   Gender    *Genders  `gorm:"foreignKey: gender_id" json:"gender"`
+	Income float64 `json:"income"` //เงินที่ทั้งหมดของคนขับ
 
+	Withdrawals []Withdrawal `gorm:"foreignKey:UserID" json:"withdrawals"` // เปลี่ยนเป็นหลายรายการ
 }

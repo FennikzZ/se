@@ -1,15 +1,20 @@
 package main
 
 import (
-	"net/http"
-	"github.com/gin-gonic/gin"
 	"example.com/sa-67-example/config"
 	"example.com/sa-67-example/controller/genders"
-	"example.com/sa-67-example/controller/promotion"  // เพิ่มการ import ฟังก์ชัน UsePromotion จาก package promotion
-	"example.com/sa-67-example/controller/discounttype"
-	"example.com/sa-67-example/controller/status"
 	"example.com/sa-67-example/controller/users"
 	"example.com/sa-67-example/middlewares"
+	"github.com/gin-gonic/gin"
+	"net/http"
+
+	"example.com/sa-67-example/controller/bankname"       // Import Bank Controller
+	"example.com/sa-67-example/controller/commission" // Import Withdrawal commission
+	"example.com/sa-67-example/controller/withdrawal" // Import Withdrawal Controller
+
+	"example.com/sa-67-example/controller/discounttype" //
+	"example.com/sa-67-example/controller/promotion"    // เพิ่มการ import ฟังก์ชัน UsePromotion จาก package promotion
+	"example.com/sa-67-example/controller/status"       //
 )
 
 const PORT = "8000"
@@ -46,13 +51,24 @@ func main() {
 		router.PUT("/promotion/:id", promotion.UpdatePromotion)
 		router.DELETE("/promotion/:id", promotion.DeletePromotion)
 
+		//withdrwal
+		router.POST("/withdrawal/money", withdrawal.CreateWithdrawal) 
+		router.GET("/withdrawal", withdrawal.GetAllWithdrawal)        // เพิ่มเส้นทางดึงข้อมูลการถอนเงินทั้งหมด
+		router.GET("/withdrawal/statement", withdrawal.GetWithdrawal)        // เพิ่มเส้นทางดึงข้อมูลการถอนเงินตาม ID
+
+		// Commission Routes
+		router.GET("/commissions", commission.GetAllCommission)     // เพิ่มเส้นทางดึงข้อมูลคอมมิชชั่นทั้งหมด
+		router.GET("/commission/:id", commission.GetCommissionByID) // เพิ่มเส้นทางดึงข้อมูลคอมมิชชั่นตาม ID
+
 	}
+
+	r.GET("/bankname", bank.GetAllBankName) // Bank Routesเพิ่มเส้นทางการดึงข้อมูลธนาคาร
 
 	r.GET("/discounttype", discounttype.GetAllD) // ใช้ฟังก์ชัน GetAllD จาก package discounttype
 
 	r.GET("/statuses", status.GetAllStatus) // เพิ่มเส้นทางสำหรับ Status
 
-	r.POST("/zzz", promotion.UsePromotion)  // เรียกใช้ฟังก์ชัน UsePromotion จาก package promotion
+	r.POST("/zzz", promotion.UsePromotion) // เรียกใช้ฟังก์ชัน UsePromotion จาก package promotion
 
 	// Genders Route
 	r.GET("/genders", genders.GetAll)

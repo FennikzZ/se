@@ -28,6 +28,14 @@ const View = Loadable(lazy(() => import("../pages/view")));
 
 const Zzz = Loadable(lazy(() => import("../pages/zzz")));
 
+//withdrawal
+const Withdrawal = Loadable(lazy(() => import("../pages/withdrawal")));
+
+const Money = Loadable(lazy(() => import("../pages/withdrawal/money")));
+
+const Statement = Loadable(lazy(() => import("../pages/withdrawal/statement")));
+
+
 
 const AdminRoutes = (isLoggedIn : boolean): RouteObject => {
 
@@ -83,59 +91,53 @@ const AdminRoutes = (isLoggedIn : boolean): RouteObject => {
 
       //promotion
       {
-
         path: "/promotion",
-
         children: [
-
           {
-
             path: "/promotion",
-
             element: <Promotion />,
-
           },
-
           {
-
             path: "/promotion/create",
-
             element: <PromotionCreate />,
-
           },
-
           {
-
             path: "/promotion/edit/:id",
-
             element: <PromotionEdit />,
-
           },
-
         ],
 
       },
       //view
       {
-
         path: "/view",
-
         element: <View />,
-
       },
-
       {
-
         path: "/zzz",
-
         element: <Zzz />,
-
       },
 
+      //withdrawal
+      {
+        path: "/withdrawal",
+        children: [
+          {
+            path: "/withdrawal",
+            element: <Withdrawal />,
+          },
+          {
+            path: "/withdrawal/money",
+            element: <Money />,
+          },
+          {
+            path: "/withdrawal/statement",
+            element: <Statement />,
+          },
+        ],
+      },
     ],
-
   };
-
 };
 
 

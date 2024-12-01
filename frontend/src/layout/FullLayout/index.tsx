@@ -24,6 +24,11 @@ import View from "../../pages/view";
 
 import Zzz from "../../pages/zzz";
 
+// Withdrawal
+import Withdrawal from "../../pages/withdrawal";
+import Money from "../../pages/withdrawal/money";
+import Statement from "../../pages/withdrawal/statement";
+
 const { Header, Content, Footer, Sider } = Layout;
 
 const FullLayout: React.FC = () => {
@@ -128,8 +133,18 @@ const FullLayout: React.FC = () => {
                 </Link>
               </Menu.Item>
 
+              <Menu.Item
+                key="withdrawal"
+                onClick={() => setCurrentPage("withdrawal")}
+              >
+                <Link to="/withdrawal" style={{ color: "#000" }}>
+                  <EyeOutlined style={{ marginRight: "8px" }} />
+                  <span> Withdrawal </span>
+                </Link>
+              </Menu.Item>
+
             </Menu>
-            
+
           </div>
 
           <Button
@@ -162,8 +177,9 @@ const FullLayout: React.FC = () => {
             }}
           >
             <Routes>
+
               <Route path="/" element={<Dashboard />} />
-              <Route path="/customer" element={<Customer />} />
+              <Route path="/customer" element={<Customer />}/>
               <Route path="/customer/create" element={<CustomerCreate />} />
               <Route path="/customer/edit/:id" element={<CustomerEdit />} />
               {/* promotion */}
@@ -173,6 +189,10 @@ const FullLayout: React.FC = () => {
               {/* view */}
               <Route path="/view" element={<View />} />
               <Route path="/zzz" element={<Zzz />} />
+              {/* withdrawal */}
+              <Route path="/withdrawal" element={<Withdrawal />} />
+              <Route path="/withdrawal/money" element={<Money />} />
+              <Route path="/withdrawal/statement" element={<Statement />} />
             </Routes>
           </div>
         </Content>

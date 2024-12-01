@@ -18,4 +18,5 @@ export interface UsersInterface {
 
   Password?: string;
 
+  income: number; 
 }

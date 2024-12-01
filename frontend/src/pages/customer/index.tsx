@@ -133,22 +133,32 @@ function Customers() {
     },
 
     {
+
       title: "",
+
       render: (record) => (
-        <Button
-          type="primary"
-          onClick={() => {
-            if (record.ID) {
-              navigate(`/promotion/edit/${record.ID}`);
-            } else {
-              messageApi.error("ไม่พบข้อมูลโปรโมชั่นที่ต้องการแก้ไข");
-            }
-          }}
-        >
-          แก้ไขข้อมูล
-        </Button>
+
+        <>
+
+          <Button
+
+            type="primary"
+
+            icon={<DeleteOutlined />}
+
+            onClick={() => navigate(`/customer/edit/${record.ID}`)}
+
+          >
+
+            แก้ไขข้อมูล
+
+          </Button>
+
+        </>
+
       ),
-    }    
+
+    },
 
   ];
 
