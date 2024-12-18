@@ -76,31 +76,35 @@ function Test() {
   };
 
   // Function to use promotion by code
-  const usePromotionByCode = async (code: string) => {
-    try {
-      const promotion = promotions.find(promo => promo.promotion_code === code);
-      if (!promotion) {
-        messageApi.error("ไม่พบโปรโมชั่นที่ใช้รหัสนี้");
-        return;
-      }
-
-      const res = await UsePromotion(promotion.id); // เรียก API ที่ใช้เพิ่ม use_count
-      if (res.status === 200) {
-        setPromotions((prevPromotions) =>
-          prevPromotions.map((promo) =>
-            promo.id === promotion.id
-              ? { ...promo, use_count: promo.use_count + 1 }
-              : promo
-          )
-        );
-        messageApi.success("ใช้โปรโมชั่นสำเร็จ");
-      } else {
-        messageApi.error("ไม่สามารถใช้โปรโมชั่นได้");
-      }
-    } catch (error) {
-      messageApi.error("เกิดข้อผิดพลาดในการใช้โปรโมชั่น");
+const usePromotionByCode = async (code: string) => {
+  try {
+    // หาโปรโมชั่นที่ตรงกับรหัสโปรโมชั่นที่กรอก
+    const promotion = promotions.find(promo => promo.promotion_code === code);
+    if (!promotion) {
+      messageApi.error("ไม่พบโปรโมชั่นที่ใช้รหัสนี้");
+      return;
     }
-  };
+
+    // ส่ง promotion.id ไปยัง backend
+    const res = await UsePromotion(promotion.id); // ส่ง id ของโปรโมชั่นที่ต้องการใช้
+
+    if (res.status === 200) {
+      // อัพเดต use_count ใน frontend ให้ตรงกับที่ server อัพเดต
+      setPromotions((prevPromotions) =>
+        prevPromotions.map((promo) =>
+          promo.id === promotion.id
+            ? { ...promo, use_count: promo.use_count + 1 }
+            : promo
+        )
+      );
+      messageApi.success("ใช้โปรโมชั่นสำเร็จ");
+    } else {
+      messageApi.error("ไม่สามารถใช้โปรโมชั่นได้");
+    }
+  } catch (error) {
+    messageApi.error("เกิดข้อผิดพลาดในการใช้โปรโมชั่น");
+  }
+};
 
   return (
     <>

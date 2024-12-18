@@ -50,6 +50,8 @@ func main() {
 		router.POST("/promotion", promotion.CreatePromotion)
 		router.PUT("/promotion/:id", promotion.UpdatePromotion)
 		router.DELETE("/promotion/:id", promotion.DeletePromotion)
+		router.POST("/zzz", promotion.UsePromotion)
+
 
 		//withdrwal
 		router.POST("/withdrawal/money", withdrawal.CreateWithdrawal) 
@@ -67,8 +69,6 @@ func main() {
 	r.GET("/discounttype", discounttype.GetAllD) // ใช้ฟังก์ชัน GetAllD จาก package discounttype
 
 	r.GET("/statuses", status.GetAllStatus) // เพิ่มเส้นทางสำหรับ Status
-
-	r.POST("/zzz", promotion.UsePromotion) // เรียกใช้ฟังก์ชัน UsePromotion จาก package promotion
 
 	// Genders Route
 	r.GET("/genders", genders.GetAll)

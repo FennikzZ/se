@@ -37,6 +37,8 @@ func SetupDatabase() {
 		&entity.Withdrawal{},
 		&entity.Commission{},
 		&entity.BankName{},
+		//payment
+		&entity.Payment{},
 	)
 
 	// สร้างข้อมูลตัวอย่าง Gender
@@ -85,13 +87,141 @@ func SetupDatabase() {
 			DiscountTypeID:       2, // Percent discount
 			StatusID:             1, // ACTIVE
 		},
-		// Add other promotions here as before
+		{
+			PromotionCode:        "DRIVE002",
+			PromotionName:        "ลด 10% เมื่อซื้อสินค้าครบ 500 บาท",
+			PromotionDescription: "รับส่วนลด 10% เมื่อยอดซื้อเกิน 500 บาท",
+			Discount:             10.0, // ส่วนลด 10%
+			EndDate:              time.Now().Add(30 * 24 * time.Hour),
+			UseLimit:             100,
+			UseCount:             0,
+			Distance:             0.0,
+			Photo:                "promo2.jpg",
+			DiscountTypeID:       2, // Percent discount
+			StatusID:             1, // ACTIVE
+		},
+		{
+			PromotionCode:        "DRIVE003",
+			PromotionName:        "ลด 100 บาท สำหรับการซื้อครั้งแรก",
+			PromotionDescription: "ลูกค้าที่ยังไม่เคยซื้อ สามารถรับส่วนลด 100 บาท",
+			Discount:             100.0, // ส่วนลด 100 บาท
+			EndDate:              time.Now().Add(30 * 24 * time.Hour),
+			UseLimit:             50,
+			UseCount:             0,
+			Distance:             0.0,
+			Photo:                "promo3.jpg",
+			DiscountTypeID:       1, // Amount discount
+			StatusID:             1, // ACTIVE
+		},
+		{
+			PromotionCode:        "DRIVE004",
+			PromotionName:        "ลด 15% สำหรับการซื้อสินค้าราคาสูงกว่า 1000 บาท",
+			PromotionDescription: "รับส่วนลด 15% เมื่อยอดซื้อเกิน 1000 บาท",
+			Discount:             15.0, // ส่วนลด 15%
+			EndDate:              time.Now().Add(30 * 24 * time.Hour),
+			UseLimit:             100,
+			UseCount:             0,
+			Distance:             0.0,
+			Photo:                "promo4.jpg",
+			DiscountTypeID:       2, // Percent discount
+			StatusID:             1, // ACTIVE
+		},
+		{
+			PromotionCode:        "DRIVE005",
+			PromotionName:        "ลด 200 บาท เมื่อชำระผ่านบัตรเครดิต",
+			PromotionDescription: "รับส่วนลด 200 บาท เมื่อชำระผ่านบัตรเครดิต",
+			Discount:             200.0, // ส่วนลด 200 บาท
+			EndDate:              time.Now().Add(30 * 24 * time.Hour),
+			UseLimit:             30,
+			UseCount:             0,
+			Distance:             0.0,
+			Photo:                "promo5.jpg",
+			DiscountTypeID:       1, // Amount discount
+			StatusID:             1, // ACTIVE
+		},
+		{
+			PromotionCode:        "DRIVE006",
+			PromotionName:        "ลด 50% เมื่อซื้อ 2 ชิ้นขึ้นไป",
+			PromotionDescription: "รับส่วนลด 50% เมื่อซื้อสินค้าทุกประเภท 2 ชิ้นขึ้นไป",
+			Discount:             50.0, // ส่วนลด 50%
+			EndDate:              time.Now().Add(30 * 24 * time.Hour),
+			UseLimit:             100,
+			UseCount:             0,
+			Distance:             0.0,
+			Photo:                "promo6.jpg",
+			DiscountTypeID:       2, // Percent discount
+			StatusID:             1, // ACTIVE
+		},
+		{
+			PromotionCode:        "DRIVE007",
+			PromotionName:        "ส่งฟรี สำหรับการสั่งซื้อมากกว่า 1000 บาท",
+			PromotionDescription: "รับบริการส่งฟรี เมื่อยอดสั่งซื้อเกิน 1000 บาท",
+			Discount:             100.0, // ส่งฟรี (ถือว่าเป็นการลดราคา)
+			EndDate:              time.Now().Add(30 * 24 * time.Hour),
+			UseLimit:             50,
+			UseCount:             0,
+			Distance:             0.0,
+			Photo:                "promo7.jpg",
+			DiscountTypeID:       1, // Amount discount
+			StatusID:             1, // ACTIVE
+		},
+		{
+			PromotionCode:        "DRIVE008",
+			PromotionName:        "ลด 25% สำหรับการสั่งซื้อผ่านแอปพลิเคชัน",
+			PromotionDescription: "รับส่วนลด 25% เมื่อสั่งซื้อผ่านแอปพลิเคชันของเรา",
+			Discount:             25.0, // ส่วนลด 25%
+			EndDate:              time.Now().Add(30 * 24 * time.Hour),
+			UseLimit:             100,
+			UseCount:             0,
+			Distance:             0.0,
+			Photo:                "promo8.jpg",
+			DiscountTypeID:       2, // Percent discount
+			StatusID:             1, // ACTIVE
+		},
+		{
+			PromotionCode:        "DRIVE009",
+			PromotionName:        "ลด 30% เมื่อซื้อสินค้าราคา 2000 บาทขึ้นไป",
+			PromotionDescription: "รับส่วนลด 30% เมื่อยอดซื้อเกิน 2000 บาท",
+			Discount:             30.0, // ส่วนลด 30%
+			EndDate:              time.Now().Add(30 * 24 * time.Hour),
+			UseLimit:             80,
+			UseCount:             0,
+			Distance:             0.0,
+			Photo:                "promo9.jpg",
+			DiscountTypeID:       2, // Percent discount
+			StatusID:             1, // ACTIVE
+		},
+		{
+			PromotionCode:        "DRIVE010",
+			PromotionName:        "ลด 10% สำหรับสินค้าประเภทอุปกรณ์กีฬา",
+			PromotionDescription: "รับส่วนลด 10% สำหรับสินค้าประเภทอุปกรณ์กีฬา",
+			Discount:             10.0, // ส่วนลด 10%
+			EndDate:              time.Now().Add(30 * 24 * time.Hour),
+			UseLimit:             100,
+			UseCount:             0,
+			Distance:             0.0,
+			Photo:                "promo10.jpg",
+			DiscountTypeID:       2, // Percent discount
+			StatusID:             1, // ACTIVE
+		},
 	}
 
 	// บันทึกข้อมูลโปรโมชั่นตัวอย่างลงในฐานข้อมูล
 	for _, promo := range promotions {
 		db.FirstOrCreate(&promo, &entity.Promotion{PromotionCode: promo.PromotionCode})
 	}
+
+	// สร้างข้อมูล Payment ตัวอย่าง
+	payment := entity.Payment{
+		PaymentAmount: 1500.00,       // จำนวนเงินที่ชำระ
+		PaymentMethod: "Credit Card", // วิธีการชำระ
+		PaymentDate:   time.Now(),    // วันที่ชำระเงิน (ใช้เวลาปัจจุบัน)
+		BookingID:     1,             // ID ของการจอง (สมมุติว่า BookingID คือ 1)
+		PromotionID:   nil,           // สมมุติว่าไม่มีโปรโมชั่นที่ใช้ในตอนนี้
+	}
+
+	// บันทึกข้อมูล Payment ตัวอย่างลงในฐานข้อมูล
+	db.Create(&payment)
 
 	// สร้างผู้ใช้ตัวอย่าง
 	hashedPassword, _ := HashPassword("123456")

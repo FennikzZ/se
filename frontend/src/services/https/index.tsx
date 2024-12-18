@@ -1,7 +1,6 @@
 import axios from "axios";
 import { PromotionInterface } from "../../interfaces/IPromotion"; 
 import { WithdrawalInterface } from "../../interfaces/IWithdrawal";
-import { CommissionInterface } from "../../interfaces/ICommission";
 import { UsersInterface } from "../../interfaces/IUser";
 import { SignInInterface } from "../../interfaces/Signln";
 
@@ -86,11 +85,12 @@ async function GetStatus() {
 
 async function UsePromotion(promotionId: number) {
   try {
-    return await axios.post(`${apiUrl}/zzz`, { promotion_id: promotionId }, requestOptions);
+    return await axios.post(`${apiUrl}/zzz`, { promotion_id: promotionId }, requestOptions);  // ส่ง promotion_id ไป
   } catch (error) {
     return handleApiError(error);
   }
 }
+
 
 // Withdrawal Service Functions
 async function GetWithdrawal(userID: string) {

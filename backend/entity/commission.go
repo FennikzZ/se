@@ -9,7 +9,7 @@ type Commission struct {
 	gorm.Model
 
 	CommissionID    uint   `json:"commission_id" gorm:"primaryKey"` // รหัสคอมมิชชั่น (PK)
-	CommissionTotal int    `json:"commission_total"`                // ยอดคอมมิชชั่นรวม (หัก 30)
+	CommissionTotal float64    `json:"commission_total"`                // ยอดคอมมิชชั่นรวม (หัก 30)
 	CommissionDate  time.Time    `json:"commission_date"`                 // วันที่คอมมิชชั่น
 
 	WithdrawalID    uint   `json:"withdrawal_id"`                   // รหัสการถอนเงิน (FK)

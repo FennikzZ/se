@@ -1,28 +1,28 @@
 import { Space, Button, Col, Row, Divider, Form, Input, Card, message, DatePicker, InputNumber, Select } from "antd";
 import { useState } from "react";
 import { PlusOutlined } from "@ant-design/icons";
-import { WithdrawalInterface } from "../../../interfaces/IWithdrawal"; // ใช้แค่ WithdrawalInterface
-import { CreateWithdrawal } from "../../../services/https"; // ยังคงเรียกใช้ CreateWithdrawal สำหรับการบันทึกข้อมูล
+import { WithdrawalInterface } from "../../../interfaces/IWithdrawal"; 
+import { CreateWithdrawal } from "../../../services/https"; 
 import { useNavigate, Link } from "react-router-dom";
-import { useSpring, animated } from "@react-spring/web"; // import react-spring
+import { useSpring, animated } from "@react-spring/web";
 
 function WithdrawalCreate() {
   const navigate = useNavigate();
   const [messageApi, contextHolder] = message.useMessage();
-  const [selectedBankName, setSelectedBank] = useState<string>(""); // Selected bank ID (string)
+  const [selectedBankName, setSelectedBank] = useState<string>(""); 
+  const [form] = Form.useForm(); 
   const [bankname] = useState<any[]>([
     { ID: "1", bank_name: "ธนาคารกรุงเทพ" },
     { ID: "2", bank_name: "ธนาคารกสิกรไทย" },
     { ID: "3", bank_name: "ธนาคารไทยพาณิชย์" },
     { ID: "4", bank_name: "ธนาคารกรุงไทย" },
     { ID: "5", bank_name: "ธนาคารทหารไทย" },
-  ]); // ธนาคารที่กำหนดไว้ในตัวแปร banks
+  ]);
 
   const onFinish = async (values: WithdrawalInterface) => {
-    // แปลง selectedBankName จาก string เป็น number
     const withdrawalData = {
       ...values,
-      bank_name_id: Number(selectedBankName), // ใช้ selectedBankName เพื่อส่งค่า bank_name_id
+      bank_name_id: Number(selectedBankName),
     };
 
     let res = await CreateWithdrawal(withdrawalData);
@@ -33,7 +33,7 @@ function WithdrawalCreate() {
         content: res.data.message,
       });
       setTimeout(() => {
-        navigate("/withdrawal"); // เปลี่ยนเส้นทางไปยังหน้าคำขอถอนเงิน
+        navigate("/withdrawal");
       }, 2000);
     } else {
       messageApi.open({
@@ -43,7 +43,16 @@ function WithdrawalCreate() {
     }
   };
 
-  // Adding animation for the card and form
+  const handleWithdrawalAmountChange = (value: number | null) => {
+    if (value === null) return;
+    const commission = value * 0.3;
+    const netAmount = value - commission;
+    form.setFieldsValue({
+      withdrawal_commission: commission,
+      withdrawal_net_amount: netAmount,
+    });
+  };
+
   const cardAnimation = useSpring({
     opacity: 1,
     transform: "translateY(0)",
@@ -67,7 +76,7 @@ function WithdrawalCreate() {
         alignItems: "center",
         height: "110vh",
         padding: "20px",
-        backgroundColor: "rgba(233, 213, 255, 0.4)", // สีพื้นหลังอ่อน
+        backgroundColor: "rgba(233, 213, 255, 0.4)",
       }}
     >
       {contextHolder}
@@ -94,57 +103,72 @@ function WithdrawalCreate() {
               onFinish={onFinish}
               autoComplete="off"
               style={{
-                backgroundColor: "rgba(127, 107, 188, 0.2)", // สีม่วงโปร่งแสง 36%
+                backgroundColor: "rgba(127, 107, 188, 0.2)",
                 padding: "20px",
                 borderRadius: "8px",
               }}
+              form={form}
             >
               <Row gutter={[16, 16]}>
-                {/* จำนวนเงินที่ถอน */}
                 <Col xs={24}>
                   <Form.Item
                     label="จำนวนเงินที่ถอน"
                     name="withdrawal_amount"
                     rules={[{ required: true, message: "กรุณากรอกจำนวนเงินที่ถอน !" }]}
                   >
-                    <InputNumber min={0} style={{ width: "100%" }} />
+                    <InputNumber
+                      min={0}
+                      style={{ width: "100%" }}
+                      step={1}
+                      precision={0}
+                      onChange={handleWithdrawalAmountChange}
+                    />
                   </Form.Item>
                 </Col>
 
-                {/* ค่าคอมมิชชั่นจากการถอน */}
                 <Col xs={24}>
                   <Form.Item
                     label="ค่าคอมมิชชั่นจากการถอน"
                     name="withdrawal_commission"
                     rules={[{ required: true, message: "กรุณากรอกค่าคอมมิชชั่นจากการถอน !" }]}
                   >
-                    <InputNumber min={0} style={{ width: "100%" }} />
+                    <InputNumber min={0} style={{ width: "100%" }} disabled />
                   </Form.Item>
                 </Col>
 
-                {/* จำนวนเงินสุทธิหลังหักค่าคอมมิชชั่น */}
                 <Col xs={24}>
                   <Form.Item
                     label="จำนวนเงินสุทธิหลังหักค่าคอมมิชชั่น"
                     name="withdrawal_net_amount"
                     rules={[{ required: true, message: "กรุณากรอกจำนวนเงินสุทธิ !" }]}
                   >
-                    <InputNumber min={0} style={{ width: "100%" }} />
+                    <InputNumber min={0} style={{ width: "100%" }} disabled />
                   </Form.Item>
                 </Col>
 
-                {/* หมายเลขบัญชีธนาคาร */}
                 <Col xs={24}>
                   <Form.Item
                     label="หมายเลขบัญชีธนาคาร"
                     name="withdrawal_bank_number"
-                    rules={[{ required: true, message: "กรุณากรอกหมายเลขบัญชีธนาคาร !" }]}
+                    rules={[
+                      { required: true, message: "กรุณากรอกหมายเลขบัญชีธนาคาร !" },
+                      {
+                        pattern: /^[0-9]{10}$/, // Regex for exactly 10 digits
+                        message: "หมายเลขบัญชีธนาคารต้องเป็นตัวเลข 10 หลัก",
+                      },
+                    ]}
                   >
-                    <Input placeholder="กรอกหมายเลขบัญชีธนาคาร" />
+                    <Input
+                      placeholder="กรอกหมายเลขบัญชีธนาคาร"
+                      maxLength={10} // Limit to 10 characters
+                      onChange={(e) => {
+                        // Ensure input contains only digits
+                        e.target.value = e.target.value.replace(/\D/g, "");
+                      }}
+                    />
                   </Form.Item>
                 </Col>
 
-                {/* วันที่ทำการถอน */}
                 <Col xs={24}>
                   <Form.Item
                     label="วันที่ทำการถอน"
@@ -155,7 +179,6 @@ function WithdrawalCreate() {
                   </Form.Item>
                 </Col>
 
-                {/* ธนาคาร */}
                 <Col xs={24}>
                   <Form.Item
                     label="ธนาคาร"
@@ -164,7 +187,7 @@ function WithdrawalCreate() {
                   >
                     <Select
                       value={selectedBankName}
-                      onChange={(value) => setSelectedBank(value)} // value เป็น string
+                      onChange={(value) => setSelectedBank(value)}
                       placeholder="เลือกธนาคาร"
                     >
                       {bankname.map((bank) => (
@@ -176,11 +199,10 @@ function WithdrawalCreate() {
                   </Form.Item>
                 </Col>
 
-                {/* ปุ่ม */}
                 <Col xs={24} sm={24} style={{ textAlign: "center" }}>
                   <Form.Item>
                     <Space size="large">
-                      <Link to="/withdrawals">
+                      <Link to="/withdrawal">
                         <Button block style={{ width: "150px" }}>ยกเลิก</Button>
                       </Link>
                       <Button
@@ -192,7 +214,7 @@ function WithdrawalCreate() {
                           backgroundColor: "#9333EA",
                           borderColor: "#9333EA",
                           color: "#fff",
-                          width: "150px", // กำหนดความกว้าง
+                          width: "150px",
                         }}
                       >
                         บันทึก

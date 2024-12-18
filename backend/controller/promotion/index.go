@@ -115,27 +115,35 @@ func DeletePromotion(c *gin.Context) {
 
 // UsePromotion - ฟังก์ชันสำหรับเพิ่ม use_count ไป 1 เมื่อใช้โปรโมชั่น
 func UsePromotion(c *gin.Context) {
-	// รับ ID ของโปรโมชั่นจาก URL
-	id := c.Param("id")
-	var promotion entity.Promotion
-
-	db := config.DB()
-
-	// ค้นหาข้อมูลโปรโมชั่นโดยใช้ ID
-	if result := db.First(&promotion, id); result.Error != nil {
-		c.JSON(http.StatusNotFound, gin.H{"error": "Promotion not found"})
-		return
+	var request struct {
+	  PromotionID int `json:"promotion_id"`  // รับ promotion_id จาก body
 	}
-
+  
+	// รับข้อมูลจาก body
+	if err := c.BindJSON(&request); err != nil {
+	  c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid input"})
+	  return
+	}
+  
+	var promotion entity.Promotion
+	db := config.DB()
+  
+	// ค้นหาข้อมูลโปรโมชั่นโดยใช้ ID
+	if result := db.First(&promotion, request.PromotionID); result.Error != nil {
+	  c.JSON(http.StatusNotFound, gin.H{"error": "Promotion not found"})
+	  return
+	}
+  
 	// เพิ่ม use_count ไป 1
 	promotion.UseCount++
-
+  
 	// บันทึกข้อมูลที่อัปเดตลงในฐานข้อมูล
 	if result := db.Save(&promotion); result.Error != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to update use count"})
-		return
+	  c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to update use count"})
+	  return
 	}
-
+  
 	// ส่งผลลัพธ์กลับ
 	c.JSON(http.StatusOK, gin.H{"message": "Promotion used successfully", "promotion": promotion})
-}
+  }
+  
