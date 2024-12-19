@@ -93,17 +93,25 @@ async function UsePromotion(promotionId: number) {
 
 
 // Withdrawal Service Functions
-async function GetWithdrawal(userID: string) {
+async function GetCommission() {
   try {
-    return await axios.get(`${apiUrl}/money/${userID}`, requestOptions);  // Use userID here
+    return await axios.get(`${apiUrl}/zzz`, requestOptions);
   } catch (error) {
     return handleApiError(error);
   }
 }
 
-async function GetWithdrawalById(userID: string) {
+async function GetWithdrawal() {
   try {
-    return await axios.get(`${apiUrl}/money/${userID}`, requestOptions);  // Use userID here
+    return await axios.get(`${apiUrl}/withdrawal/statement`, requestOptions);
+  } catch (error) {
+    return handleApiError(error);
+  }
+}
+
+async function GetWithdrawalById(id: string) {
+  try {
+    return await axios.get(`${apiUrl}/withdrawal/statement/${id}`, requestOptions);
   } catch (error) {
     return handleApiError(error);
   }
@@ -201,6 +209,7 @@ export {
   GetStatus,
   UsePromotion,
   //withdrawal
+  GetCommission,
   GetWithdrawal,
   GetWithdrawalById,
   CreateWithdrawal,

@@ -1,4 +1,4 @@
-package bank
+package bankname
 
 
 import (

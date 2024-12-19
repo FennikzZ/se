@@ -211,6 +211,17 @@ func SetupDatabase() {
 		db.FirstOrCreate(&promo, &entity.Promotion{PromotionCode: promo.PromotionCode})
 	}
 
+	// สร้างข้อมูล Commission ตัวอย่าง
+	commission := entity.Commission{
+		CommissionTotal: 30.0,                 // ค่าคอมมิชชั่นที่หัก
+		CommissionDate:  time.Now(),            // วันที่คอมมิชชั่น
+		WithdrawalID:    1,                     // ใช้รหัส Withdrawal (ปรับให้เหมาะสมกับข้อมูลที่มี)
+		Withdrawal:      nil, // การเชื่อมโยงกับข้อมูล Withdrawal
+	}
+
+	// บันทึกข้อมูล Commission ลงในฐานข้อมูล
+	db.Create(&commission)
+
 	// สร้างข้อมูล Payment ตัวอย่าง
 	payment := entity.Payment{
 		PaymentAmount: 1500.00,       // จำนวนเงินที่ชำระ

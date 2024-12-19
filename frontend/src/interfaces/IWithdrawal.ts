@@ -8,4 +8,5 @@ export interface WithdrawalInterface {
   
     BankNameID: number; // ชื่อธนาคารที่ถอนเงิน
     UserID: number; // (เชื่อมโยงกับ Users)
+    user_id: number
   }

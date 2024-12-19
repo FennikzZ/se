@@ -1,14 +1,18 @@
 import React, { useState, useEffect } from "react";
-import { Carousel, Card, Image, Tag, Divider, message, Row, Col, Button } from "antd";
+import { Carousel, Card, Image, Tag, Divider, message, Row, Col, Button, Typography } from "antd";
 import { CopyOutlined } from "@ant-design/icons";
 import Navbar from "../../components/Navbar/Navbar";
 import Footer from "../../components/Footer/Footer";
-import { GetPromotions } from "../../services/https/index";
+import { GetPromotions, GetCommission } from "../../services/https/index"; // เพิ่มฟังก์ชัน GetCommission
 import dayjs from "dayjs";
 import "dayjs/locale/th"; // ใช้ภาษาไทยสำหรับวันที่
 import "./Home.css";
 
-// สร้าง Interface ภายในไฟล์นี้
+// สร้าง Interface สำหรับคอมมิชชั่น
+interface CommissionInterface {
+  commission_total: number;
+}
+
 interface PromotionInterface {
   id: number;
   promotion_code: string;
@@ -25,9 +29,29 @@ interface PromotionInterface {
 
 const Home: React.FC = () => {
   const [promotions, setPromotions] = useState<PromotionInterface[]>([]);
+  const [commissions, setCommissions] = useState<CommissionInterface[]>([]); // สำหรับเก็บข้อมูลคอมมิชชั่น
+  const [totalCommission, setTotalCommission] = useState<number>(0); // สำหรับเก็บผลรวมคอมมิชชั่น
   const [messageApi] = message.useMessage();
 
-  // Fetch promotions data
+  // ดึงข้อมูลคอมมิชชั่นทั้งหมด
+  const getCommission = async () => {
+    try {
+      const res = await GetCommission();
+      if (res.status === 200) {
+        setCommissions(res.data);
+  
+        // Get the most recent commission total
+        const latestCommissionTotal = res.data.length > 0 ? res.data[res.data.length - 1].commission_total : 0;
+        setTotalCommission(latestCommissionTotal);
+      } else {
+        messageApi.error(res.data.error);
+      }
+    } catch (error) {
+      messageApi.error("ไม่สามารถดึงข้อมูลคอมมิชชั่นได้");
+    }
+  };
+
+  // ดึงข้อมูลโปรโมชัน
   const getPromotions = async () => {
     try {
       const res = await GetPromotions();
@@ -44,9 +68,10 @@ const Home: React.FC = () => {
 
   useEffect(() => {
     getPromotions();
+    getCommission(); // ดึงข้อมูลคอมมิชชั่น
   }, []);
 
-  // Format date in Thai locale
+  // ฟอร์แมทวันที่ในรูปแบบภาษาไทย
   const formatDate = (date: string) => dayjs(date).locale("th").format("D MMMM YYYY");
 
   // Handle copy promo code to clipboard
@@ -57,7 +82,7 @@ const Home: React.FC = () => {
     );
   };
 
-  // Render promotion status with larger size
+  // Render promotion status
   const renderStatus = (statusId: number) => {
     if (statusId === 1) {
       return <Tag color="green" style={{ fontSize: '15px', padding: '5px 10px', borderRadius: '5px' }}>ใช้งานได้</Tag>;
@@ -87,12 +112,19 @@ const Home: React.FC = () => {
         </p>
       </div>
 
+      {/* แสดงจำนวนรายได้ทั้งหมด */}
+      <div style={{ textAlign: "center", marginTop: "20px" }}>
+        <Typography.Title level={3}>
+          จำนวนรายได้ทั้งหมด: {totalCommission} บาท
+        </Typography.Title>
+      </div>
+
+      {/* ส่วนของโปรโมชัน */}
       <div className="promotion-banner" style={{ position: "relative", padding: "30px 0" }}>
         <h2 style={{ textAlign: "center", marginBottom: "30px", color: "#9333EA", fontSize: "24px" }}>
           Promotions
         </h2>
         <Divider />
-
         <Carousel arrows infinite={false} style={{ padding: "0 20px" }}>
           {promotions.map((promotion) => (
             <div key={promotion.id}>
@@ -242,7 +274,6 @@ const Home: React.FC = () => {
           ))}
         </Carousel>
       </div>
-
       <Footer />
     </div>
   );

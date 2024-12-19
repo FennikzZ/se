@@ -179,7 +179,7 @@ function Withdrawal() {
             {/* แสดงโลโก้ โดยใช้ตัวแปร logo ที่นำเข้า */}
             <img
               src={logo}
-              alt="Logo"
+              alt="logo"
               style={{
                 width: "200px",
                 marginBottom: "20px",

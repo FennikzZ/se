@@ -1,16 +1,21 @@
+import { useState, useEffect } from "react";
 import { Space, Button, Col, Row, Divider, Form, Input, Card, message, DatePicker, InputNumber, Select } from "antd";
-import { useState } from "react";
-import { PlusOutlined } from "@ant-design/icons";
-import { WithdrawalInterface } from "../../../interfaces/IWithdrawal"; 
-import { CreateWithdrawal } from "../../../services/https"; 
+import { PlusOutlined, CopyrightOutlined } from "@ant-design/icons";
+import { WithdrawalInterface } from "../../../interfaces/IWithdrawal";
+import { UsersInterface } from "../../../interfaces/IUser";
+import { GetUsers, CreateWithdrawal } from "../../../services/https"; // ใช้ GetUsers ดึงข้อมูลผู้ใช้
 import { useNavigate, Link } from "react-router-dom";
 import { useSpring, animated } from "@react-spring/web";
+import dayjs from 'dayjs';
+import logo from "../../../assets/with.png"; // อย่าลืมนำเข้าภาพโลโก้
 
 function WithdrawalCreate() {
   const navigate = useNavigate();
   const [messageApi, contextHolder] = message.useMessage();
-  const [selectedBankName, setSelectedBank] = useState<string>(""); 
-  const [form] = Form.useForm(); 
+  const [selectedBankName, setSelectedBank] = useState<string>("");
+  const [form] = Form.useForm();
+  const [userIncome, setUserIncome] = useState<number>(0); // เก็บยอดเงินของผู้ใช้ที่กำลังใช้งาน
+  const [userId, setUserId] = useState<number | null>(null); // เก็บ userId ของผู้ใช้ที่กำลังใช้งาน
   const [bankname] = useState<any[]>([
     { ID: "1", bank_name: "ธนาคารกรุงเทพ" },
     { ID: "2", bank_name: "ธนาคารกสิกรไทย" },
@@ -19,10 +24,44 @@ function WithdrawalCreate() {
     { ID: "5", bank_name: "ธนาคารทหารไทย" },
   ]);
 
+  // ดึงข้อมูลผู้ใช้งานปัจจุบัน
+  const getCurrentUser = async () => {
+    const myId = localStorage.getItem("id");
+    let res = await GetUsers(); // ใช้ API ที่คุณมีเพื่อดึงข้อมูลผู้ใช้
+    if (res.status === 200) {
+      const currentUser = res.data.filter(
+        (user: UsersInterface) => user.ID?.toString() === myId
+      );
+      if (currentUser.length > 0) {
+        setUserIncome(currentUser[0].income);
+        setUserId(currentUser[0].ID); // เก็บ userId ที่กำลังใช้งาน
+      }
+    } else {
+      messageApi.open({
+        type: "error",
+        content: res.data.error,
+      });
+    }
+  };
+
+  useEffect(() => {
+    getCurrentUser();
+  }, []);
+
+  // ฟังก์ชันสำหรับส่งข้อมูลการถอนเงิน
   const onFinish = async (values: WithdrawalInterface) => {
+    if (!userId) {
+      messageApi.open({
+        type: "error",
+        content: "ไม่สามารถระบุผู้ใช้ที่กำลังใช้งานได้",
+      });
+      return;
+    }
+
     const withdrawalData = {
       ...values,
       bank_name_id: Number(selectedBankName),
+      user_id: userId, // เพิ่ม userId ในข้อมูลการถอน
     };
 
     let res = await CreateWithdrawal(withdrawalData);
@@ -43,6 +82,7 @@ function WithdrawalCreate() {
     }
   };
 
+  // คำนวณค่าคอมมิชชั่นและยอดสุทธิ
   const handleWithdrawalAmountChange = (value: number | null) => {
     if (value === null) return;
     const commission = value * 0.3;
@@ -85,17 +125,49 @@ function WithdrawalCreate() {
           style={{
             width: "100%",
             maxWidth: "800px",
-            backgroundColor: "rgba(255, 255, 255, 0.7)",
+            backgroundColor: "rgba(254, 246, 255, 0.65)",
             borderRadius: "8px",
             padding: "20px",
             display: "flex",
             flexDirection: "column",
           }}
         >
-          <h2 style={{ color: "#6B21A8", textAlign: "center", fontSize: "29px", fontWeight: "bold", marginTop: 0 }}>
-            สร้างคำขอถอนเงิน
+          <h2
+            style={{
+              textAlign: "center",
+              fontSize: "29px",
+              fontWeight: "bold",
+              marginTop: 0,
+              backgroundColor: "rgba(147, 51, 234, 0.8)", // สีพื้นหลังที่ต้องการ
+              padding: "10px", // เพิ่ม padding เพื่อให้ข้อความไม่ติดขอบ
+              borderRadius: "5px", // เพิ่มมุมมน
+              color: "#fff", // เปลี่ยนสีข้อความให้ขาวเพื่อให้อ่านง่าย
+            }}
+          >
+            เบิกเงินพนักงาน
           </h2>
           <Divider style={{ margin: "10px 0" }} />
+
+          <img
+            src={logo}
+            alt="Logo"
+            style={{
+              width: "200px",
+              marginBottom: "20px",
+              borderRadius: "8px",
+              display: "block",  // This makes the image behave like a block element
+              marginLeft: "auto",  // This centers the image horizontally
+              marginRight: "auto", // This ensures it's centered on both sides
+            }}
+          />
+
+          {/* แสดงยอดเงินผู้ใช้ที่กำลังใช้งาน */}
+          <div style={{ textAlign: "center", marginBottom: "20px" }}>
+            <h3 style={{ fontSize: "25px", color: "#47456C" }}>
+              <CopyrightOutlined style={{ color: "#7F6BCC" }} /> {userIncome} บาท
+            </h3>
+          </div>
+
           <animated.div style={formAnimation}>
             <Form
               name="withdrawalCreate"
@@ -103,14 +175,15 @@ function WithdrawalCreate() {
               onFinish={onFinish}
               autoComplete="off"
               style={{
-                backgroundColor: "rgba(127, 107, 188, 0.2)",
+                backgroundColor: "rgba(118, 72, 179, 0.13)",
                 padding: "20px",
                 borderRadius: "8px",
               }}
               form={form}
             >
               <Row gutter={[16, 16]}>
-                <Col xs={24}>
+                {/* Withdrawal Amount and Commission on the same row */}
+                <Col xs={24} sm={12}>
                   <Form.Item
                     label="จำนวนเงินที่ถอน"
                     name="withdrawal_amount"
@@ -118,6 +191,7 @@ function WithdrawalCreate() {
                   >
                     <InputNumber
                       min={0}
+                      max={userIncome}
                       style={{ width: "100%" }}
                       step={1}
                       precision={0}
@@ -126,7 +200,7 @@ function WithdrawalCreate() {
                   </Form.Item>
                 </Col>
 
-                <Col xs={24}>
+                <Col xs={24} sm={12}>
                   <Form.Item
                     label="ค่าคอมมิชชั่นจากการถอน"
                     name="withdrawal_commission"
@@ -136,7 +210,8 @@ function WithdrawalCreate() {
                   </Form.Item>
                 </Col>
 
-                <Col xs={24}>
+                {/* Net Amount and Withdrawal Date on the same row */}
+                <Col xs={24} sm={12}>
                   <Form.Item
                     label="จำนวนเงินสุทธิหลังหักค่าคอมมิชชั่น"
                     name="withdrawal_net_amount"
@@ -146,40 +221,23 @@ function WithdrawalCreate() {
                   </Form.Item>
                 </Col>
 
-                <Col xs={24}>
+                <Col xs={24} sm={12}>
                   <Form.Item
-                    label="หมายเลขบัญชีธนาคาร"
-                    name="withdrawal_bank_number"
-                    rules={[
-                      { required: true, message: "กรุณากรอกหมายเลขบัญชีธนาคาร !" },
-                      {
-                        pattern: /^[0-9]{10}$/, // Regex for exactly 10 digits
-                        message: "หมายเลขบัญชีธนาคารต้องเป็นตัวเลข 10 หลัก",
-                      },
-                    ]}
+                    label="วันที่ทำการถอน"
+                    name="withdrawal_date"
+                    initialValue={dayjs()}
+                    rules={[{ required: true, message: "กรุณาเลือกวันที่ทำการถอน !" }]}
                   >
-                    <Input
-                      placeholder="กรอกหมายเลขบัญชีธนาคาร"
-                      maxLength={10} // Limit to 10 characters
-                      onChange={(e) => {
-                        // Ensure input contains only digits
-                        e.target.value = e.target.value.replace(/\D/g, "");
-                      }}
+                    <DatePicker
+                      style={{ width: "100%" }}
+                      disabled
+                      defaultValue={dayjs()}
                     />
                   </Form.Item>
                 </Col>
 
-                <Col xs={24}>
-                  <Form.Item
-                    label="วันที่ทำการถอน"
-                    name="withdrawal_date"
-                    rules={[{ required: true, message: "กรุณาเลือกวันที่ทำการถอน !" }]}
-                  >
-                    <DatePicker style={{ width: "100%" }} />
-                  </Form.Item>
-                </Col>
-
-                <Col xs={24}>
+                {/* Bank and Account Number on the same row */}
+                <Col xs={24} sm={12}>
                   <Form.Item
                     label="ธนาคาร"
                     name="bank_name_id"
@@ -191,11 +249,33 @@ function WithdrawalCreate() {
                       placeholder="เลือกธนาคาร"
                     >
                       {bankname.map((bank) => (
-                        <Select.Option key={bank.ID} value={bank.ID.toString()}>
+                        <Select.Option key={bank.ID} value={bank.ID}>
                           {bank.bank_name}
                         </Select.Option>
                       ))}
                     </Select>
+                  </Form.Item>
+                </Col>
+
+                <Col xs={24} sm={12}>
+                  <Form.Item
+                    label="หมายเลขบัญชีธนาคาร"
+                    name="withdrawal_bank_number"
+                    rules={[
+                      { required: true, message: "กรุณากรอกหมายเลขบัญชีธนาคาร !" },
+                      {
+                        pattern: /^[0-9]{10}$/,
+                        message: "หมายเลขบัญชีธนาคารต้องเป็นตัวเลข 10 หลัก",
+                      },
+                    ]}
+                  >
+                    <Input
+                      placeholder="กรอกหมายเลขบัญชีธนาคาร"
+                      maxLength={10}
+                      onChange={(e) => {
+                        e.target.value = e.target.value.replace(/\D/g, "");
+                      }}
+                    />
                   </Form.Item>
                 </Col>
 
@@ -225,6 +305,7 @@ function WithdrawalCreate() {
               </Row>
             </Form>
           </animated.div>
+
         </Card>
       </animated.div>
     </div>

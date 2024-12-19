@@ -8,8 +8,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"net/http"
 
-	"example.com/sa-67-example/controller/bankname"       // Import Bank Controller
-	"example.com/sa-67-example/controller/commission" // Import Withdrawal commission
+	"example.com/sa-67-example/controller/bankname"    // Import Bank Controller
 	"example.com/sa-67-example/controller/withdrawal" // Import Withdrawal Controller
 
 	"example.com/sa-67-example/controller/discounttype" //
@@ -50,21 +49,19 @@ func main() {
 		router.POST("/promotion", promotion.CreatePromotion)
 		router.PUT("/promotion/:id", promotion.UpdatePromotion)
 		router.DELETE("/promotion/:id", promotion.DeletePromotion)
-		router.POST("/zzz", promotion.UsePromotion)
+
+		//commission
+		router.GET("/zzz", withdrawal.GetAllCommission)
 
 
 		//withdrwal
 		router.POST("/withdrawal/money", withdrawal.CreateWithdrawal) 
-		router.GET("/withdrawal", withdrawal.GetAllWithdrawal)        // เพิ่มเส้นทางดึงข้อมูลการถอนเงินทั้งหมด
-		router.GET("/withdrawal/statement", withdrawal.GetWithdrawal)        // เพิ่มเส้นทางดึงข้อมูลการถอนเงินตาม ID
-
-		// Commission Routes
-		router.GET("/commissions", commission.GetAllCommission)     // เพิ่มเส้นทางดึงข้อมูลคอมมิชชั่นทั้งหมด
-		router.GET("/commission/:id", commission.GetCommissionByID) // เพิ่มเส้นทางดึงข้อมูลคอมมิชชั่นตาม ID
+		router.GET("/withdrawal/statement", withdrawal.GetAllWithdrawal) // เพิ่มเส้นทางดึงข้อมูลการถอนเงินทั้งหมด
+		router.GET("/withdrawal/statement/:id", withdrawal.GetWithdrawal)  // เพิ่มเส้นทางดึงข้อมูลการถอนเงินตาม ID
 
 	}
 
-	r.GET("/bankname", bank.GetAllBankName) // Bank Routesเพิ่มเส้นทางการดึงข้อมูลธนาคาร
+	r.GET("/bankname", bankname.GetAllBankName) // Bank Routesเพิ่มเส้นทางการดึงข้อมูลธนาคาร
 
 	r.GET("/discounttype", discounttype.GetAllD) // ใช้ฟังก์ชัน GetAllD จาก package discounttype
 
