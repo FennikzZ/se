@@ -250,7 +250,7 @@ function PromotionEdit() {
                     </Col>
 
                     <Col xs={24} sm={12}>
-                      <Form.Item label="จำนวนครั้งที่ใช้ได้" name="use_limit" rules={[{ required: true, message: "กรุณากรอกจำนวนครั้งที่ใช้ได้ !" }]}>
+                      <Form.Item label="จำนวนสิทธิ์" name="use_limit" rules={[{ required: true, message: "กรุณากรอกจำนวนครั้งที่ใช้ได้ !" }]}>
                         <InputNumber min={0} max={100} style={{ width: "100%" }} />
                       </Form.Item>
                     </Col>
@@ -261,20 +261,22 @@ function PromotionEdit() {
                 <Col xs={24}>
                   <Row gutter={[16, 16]}>
                     <Col xs={24} sm={12}>
-                      <Form.Item label="วันหมดเขต" name="end_date" rules={[{ required: true, message: "กรุณากำหนดวันที่สิ้นสุด !" }]}>
-                        <DatePicker style={{ width: "100%" }} />
+                      <Form.Item label="ระยะทางขั้นต่ำ (กิโลเมตร)" name="distance">
+                        <InputNumber min={0} max={1000} style={{ width: "100%" }} />
                       </Form.Item>
                     </Col>
-
                     <Col xs={24} sm={12}>
-                      <Form.Item label="ระยะทางสูงสุด (กิโลเมตร)" name="distance">
-                        <InputNumber min={0} max={1000} style={{ width: "100%" }} />
+                      <Form.Item label="วันสิ้นสุดโปรโมชั่น" name="end_date" rules={[{ required: true, message: "กรุณาเลือกวันหมดเขต !" }]}>
+                        <DatePicker
+                          style={{ width: "100%" }}
+                          disabledDate={(current) => current && current < dayjs().endOf('day')}  // ใช้ dayjs แทน moment
+                        />
                       </Form.Item>
                     </Col>
                   </Row>
                 </Col>
 
-                
+
 
                 {/* Description */}
                 <Col xs={24}>

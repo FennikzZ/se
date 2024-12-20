@@ -21,8 +21,11 @@ import PromotionCreate from "../../pages/promotion/create";
 import PromotionEdit from "../../pages/promotion/edit";
 // view
 import View from "../../pages/view";
-
+// commission
 import Zzz from "../../pages/zzz";
+// test promotion
+import Test from "../../pages/test";
+
 
 // Withdrawal
 import Withdrawal from "../../pages/withdrawal";
@@ -124,12 +127,22 @@ const FullLayout: React.FC = () => {
               </Menu.Item>
 
               <Menu.Item
+                key="test"
+                onClick={() => setCurrentPage("test")}
+              >
+                <Link to="/test" style={{ color: "#000" }}>
+                  <GiftOutlined style={{ marginRight: "8px" }} />
+                  <span> Test Promotion </span>
+                </Link>
+              </Menu.Item>
+
+              <Menu.Item
                 key="zzz"
                 onClick={() => setCurrentPage("zzz")}
               >
                 <Link to="/zzz" style={{ color: "#000" }}>
                   <EyeOutlined style={{ marginRight: "8px" }} />
-                  <span>Test Promotion</span>
+                  <span>Commission</span>
                 </Link>
               </Menu.Item>
 
@@ -189,6 +202,7 @@ const FullLayout: React.FC = () => {
               {/* view */}
               <Route path="/view" element={<View />} />
               <Route path="/zzz" element={<Zzz />} />
+              <Route path="/test" element={<Test />} />
               {/* withdrawal */}
               <Route path="/withdrawal" element={<Withdrawal />} />
               <Route path="/withdrawal/money" element={<Money />} />

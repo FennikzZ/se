@@ -1,6 +1,7 @@
 package promotion
 
 import (
+	"time"
 	"net/http"
 	"github.com/gin-gonic/gin"
 	"example.com/sa-67-example/config"
@@ -113,37 +114,73 @@ func DeletePromotion(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"message": "Promotion deleted successfully"})
 }
 
-// UsePromotion - ฟังก์ชันสำหรับเพิ่ม use_count ไป 1 เมื่อใช้โปรโมชั่น
+// UsePromotion - ฟังก์ชันสำหรับใช้โปรโมชั่นโดย promotion_code
 func UsePromotion(c *gin.Context) {
 	var request struct {
-	  PromotionID int `json:"promotion_id"`  // รับ promotion_id จาก body
+		PromotionCode string `json:"promotion_code"` // รับ promotion_code จาก body
 	}
-  
+
 	// รับข้อมูลจาก body
 	if err := c.BindJSON(&request); err != nil {
-	  c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid input"})
-	  return
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid input"})
+		return
 	}
-  
+
 	var promotion entity.Promotion
 	db := config.DB()
-  
-	// ค้นหาข้อมูลโปรโมชั่นโดยใช้ ID
-	if result := db.First(&promotion, request.PromotionID); result.Error != nil {
-	  c.JSON(http.StatusNotFound, gin.H{"error": "Promotion not found"})
-	  return
+
+	// ค้นหาข้อมูลโปรโมชั่นโดยใช้ promotion_code
+	if result := db.Where("promotion_code = ?", request.PromotionCode).First(&promotion); result.Error != nil {
+		c.JSON(http.StatusNotFound, gin.H{"error": "Promotion not found"})
+		return
 	}
-  
+
+	// ตรวจสอบสถานะโปรโมชั่น (status_id)
+	if promotion.StatusID == 2 {
+		// ถ้า status_id = 2 (ปิดการใช้งาน) จะไม่สามารถใช้ได้
+		c.JSON(http.StatusForbidden, gin.H{"error": "Promotion is disabled"})
+		return
+	}
+
+	// ตรวจสอบว่า EndDate มากกว่าวันปัจจุบัน
+	if promotion.EndDate.Before(time.Now()) || promotion.EndDate.Equal(time.Now()) {
+		// ถ้า EndDate มากกว่าวันปัจจุบัน ให้เปลี่ยน StatusID เป็น 2 ทันที
+		promotion.StatusID = 2
+
+		// บันทึกการเปลี่ยนแปลง status_id ในฐานข้อมูล
+		if result := db.Save(&promotion); result.Error != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to update status"})
+			return
+		}
+
+		c.JSON(http.StatusForbidden, gin.H{"error": "Promotion has expired, status updated to disabled"})
+		return
+	}
+
+	// ตรวจสอบว่า use_count ไม่เกิน use_limit
+	if promotion.UseCount >= promotion.UseLimit {
+		// ถ้า use_count เท่ากับ use_limit ให้เปลี่ยน status_id เป็น 2
+		promotion.StatusID = 2
+
+		// บันทึกการเปลี่ยนแปลง status_id ในฐานข้อมูล
+		if result := db.Save(&promotion); result.Error != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to update status"})
+			return
+		}
+
+		c.JSON(http.StatusForbidden, gin.H{"error": "Promotion use limit reached, status updated to disabled"})
+		return
+	}
+
 	// เพิ่ม use_count ไป 1
 	promotion.UseCount++
-  
+
 	// บันทึกข้อมูลที่อัปเดตลงในฐานข้อมูล
 	if result := db.Save(&promotion); result.Error != nil {
-	  c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to update use count"})
-	  return
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to update use count"})
+		return
 	}
-  
+
 	// ส่งผลลัพธ์กลับ
 	c.JSON(http.StatusOK, gin.H{"message": "Promotion used successfully", "promotion": promotion})
-  }
-  
+}

@@ -1,11 +1,9 @@
 import { useState, useEffect } from "react";
-import { Table, Button, Col, Row, Divider, message, Card } from "antd";
-import { DeleteOutlined, CopyrightOutlined } from "@ant-design/icons"; // เพิ่ม CopyrightOutlined
-import type { ColumnsType } from "antd/es/table";
+import { Button, Col, Row, Divider, message, Card } from "antd";
+import { LoginOutlined, HistoryOutlined, CreditCardOutlined } from "@ant-design/icons"; // เพิ่ม WalletOutlined และ HistoryOutlined
 import { GetUsers, DeleteUsersById } from "../../services/https/index";
 import { UsersInterface } from "../../interfaces/IUser";
 import { useNavigate } from "react-router-dom";
-import dayjs from "dayjs";
 import logo from "../../assets/wallet.png"; // อย่าลืมนำเข้าภาพโลโก้
 
 function Withdrawal() {
@@ -13,86 +11,6 @@ function Withdrawal() {
   const [users, setUsers] = useState<UsersInterface[]>([]);
   const [messageApi, contextHolder] = message.useMessage();
   const myId = localStorage.getItem("id");
-
-  const columns: ColumnsType<UsersInterface> = [
-    {
-      title: "",
-      render: (record) => (
-        <>
-          {/* ตรวจสอบว่า record.ID มีค่าก่อน */}
-          {record?.ID && myId !== record.ID ? (
-            <Button
-              type="dashed"
-              danger
-              icon={<DeleteOutlined />}
-              onClick={() => {
-                deleteUserById(record.ID);
-              }}
-            />
-          ) : null}
-        </>
-      ),
-    },
-
-    {
-      title: "ลำดับ",
-      dataIndex: "ID",
-      key: "id",
-    },
-    {
-      title: "ชื่อ",
-      dataIndex: "first_name",
-      key: "first_name",
-    },
-    {
-      title: "นามสกุล",
-      dataIndex: "last_name",
-      key: "last_name",
-    },
-    {
-      title: "อีเมล",
-      dataIndex: "email",
-      key: "email",
-    },
-    {
-      title: "วัน/เดือน/ปี เกิด",
-      key: "birthday",
-      render: (record) => <>{dayjs(record.birthday).format("DD/MM/YYYY")}</>,
-    },
-    {
-      title: "อายุ",
-      dataIndex: "age",
-      key: "age",
-    },
-    {
-      title: "เพศ",
-      key: "gender",
-      render: (record) => <>{record?.gender?.gender}</>,
-    },
-    {
-      title: "ยอดเงิน",
-      key: "income",
-      render: (record) => <>{record.income} บาท</>,
-    },
-    {
-      title: "",
-      render: (record) => (
-        <>
-          {/* ตรวจสอบว่า record.ID มีค่าก่อน */}
-          {record?.ID ? (
-            <Button
-              type="primary"
-              onClick={() => {
-                navigate(`/promotion/edit/${record.ID}`);
-              }}
-            >
-              แก้ไขข้อมูล
-            </Button>
-          ) : null}
-        </>
-      ),
-    },
-  ];
 
   const deleteUserById = async (id: string) => {
     if (!id) return;  // if the ID is undefined, exit the function
@@ -163,6 +81,8 @@ function Withdrawal() {
               boxShadow: "rgba(0, 0, 0, 0.1) 0px 4px 12px",
               borderRadius: "10px",
               border: "none",
+              maxWidth: "600px", // ปรับขนาด Card
+              margin: "0 auto", // จัดกึ่งกลาง
             }}
           >
             <h2
@@ -191,7 +111,8 @@ function Withdrawal() {
               ยอดเงินของคุณ
             </h3>
             <h3 style={{ fontSize: "25px", color: "#47456C" }}>
-              <CopyrightOutlined style={{ color: "#7F6BCC" }} /> {userIncome} บาท
+              <CreditCardOutlined style={{ color: "#7F6BCC", marginRight: "8px" }} />
+              {userIncome} บาท
             </h3>
 
             {/* ปุ่มเบิกเงิน */}
@@ -207,6 +128,7 @@ function Withdrawal() {
                 fontSize: "18px",
               }}
               onClick={handleWithdrawClick} // เมื่อคลิกปุ่มจะไปที่หน้า "เบิกเงิน"
+              icon={<LoginOutlined />} // เพิ่มไอคอนเบิกเงิน
             >
               เบิกเงิน
             </Button>
@@ -224,21 +146,13 @@ function Withdrawal() {
                 fontSize: "18px",
               }}
               onClick={handleHistoryClick} // เมื่อคลิกปุ่มจะไปที่หน้า "ประวัติการถอนเงิน"
+              icon={<HistoryOutlined />} // เพิ่มไอคอนประวัติการถอนเงิน
             >
-              ตรวจสอบประวัติการถอนเงิน
+              ประวัติการทำรายการ
             </Button>
           </Card>
         </Col>
       </Row>
-
-      <div style={{ marginTop: 20 }}>
-        <Table
-          rowKey="ID"
-          columns={columns}
-          dataSource={users}
-          style={{ width: "100%", overflow: "scroll" }}
-        />
-      </div>
     </>
   );
 }

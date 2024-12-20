@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Space, Button, Col, Row, Divider, Form, Input, Card, message, DatePicker, InputNumber, Select } from "antd";
+import { Button, Col, Row, Divider, Form, Input, Card, message, DatePicker, InputNumber, Select } from "antd";
 import { PlusOutlined, CopyrightOutlined } from "@ant-design/icons";
 import { WithdrawalInterface } from "../../../interfaces/IWithdrawal";
 import { UsersInterface } from "../../../interfaces/IUser";
@@ -281,7 +281,6 @@ function WithdrawalCreate() {
 
                 <Col xs={24} sm={24} style={{ textAlign: "center" }}>
                   <Form.Item>
-                    <Space size="large">
                       <Link to="/withdrawal">
                         <Button block style={{ width: "150px" }}>ยกเลิก</Button>
                       </Link>
@@ -299,7 +298,6 @@ function WithdrawalCreate() {
                       >
                         บันทึก
                       </Button>
-                    </Space>
                   </Form.Item>
                 </Col>
               </Row>

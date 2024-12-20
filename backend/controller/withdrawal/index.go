@@ -55,6 +55,7 @@ func CreateWithdrawal(c *gin.Context) {
 
 	// สร้างข้อมูลคอมมิชชั่นใหม่
 	commission := entity.Commission{
+		CommissionAmount: withdrawal.WithdrawalCommission,
 		CommissionTotal: commissionTotal,
 		CommissionDate:  withdrawal.WithdrawalDate, // ใช้วันที่เดียวกับวันที่ถอน
 		WithdrawalID:    withdrawal.ID,

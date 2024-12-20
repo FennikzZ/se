@@ -1,0 +1,121 @@
+/* General styles for centering content */
+.ant-row-center {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* General card styles */
+.card {
+    box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px; /* Subtle shadow */
+    background-color: #ffffff; /* White background for all cards */
+    border-radius: 12px; /* Rounded corners */
+    padding: 16px;
+    transition: all 0.3s ease-in-out; /* Smooth transition for hover effects */
+}
+
+/* Card hover effect */
+.card:hover {
+    transform: translateY(-5px); /* Lift effect on hover */
+    box-shadow: rgba(100, 100, 111, 0.4) 0px 10px 30px 0px; /* Stronger shadow on hover */
+}
+
+/* Styling for "รายได้รวมปัจจุบัน" */
+.card-commission-total {
+    background-color: #ffffff; /* White background */
+    color: #47456c; /* Darker text color for values */
+}
+
+/* Styling for "จำนวนการถอน" */
+.card-withdrawal-count {
+    background-color: #ffffff; /* White background */
+    color: #47456c; /* Darker text color for values */
+}
+
+/* Statistic title style */
+.card .ant-statistic-title {
+    color: #7f6bcc; /* Medium purple for titles */
+    font-size: 20px; /* Larger title font size for prominence */
+    font-weight: bold;
+    text-align: center;
+}
+
+/* Statistic card value */
+.card .ant-statistic-content-value {
+    color: #47456c; /* Darker purple for values */
+    font-size: 36px; /* Larger font size for values */
+    font-weight: bold;
+    text-align: center;
+}
+
+/* Statistic card prefix icon */
+.card .ant-statistic-content-prefix {
+    font-size: 28px; /* Larger icon size */
+    color: #9333ea; /* Bright purple for icons */
+}
+
+/* Statistic card suffix (e.g., บาท) */
+.card .ant-statistic-content-suffix {
+    font-size: 18px; /* Font size for suffix */
+    color: #575a83; /* Secondary purple color */
+}
+
+/* Divider styling */
+.divider {
+    border-top: 2px solid #47456c; /* Dark purple color */
+    margin: 24px 0; /* Space around the divider */
+}
+
+/* Table header and row styling */
+.commission-table .ant-table-thead > tr > th {
+    background-color: #575a83; /* Medium purple for headers */
+    color: white; /* White text for better contrast */
+    font-weight: bold;
+    text-align: center;
+    padding: 12px; /* Padding for table header */
+    font-size: 16px;
+}
+
+.commission-table .ant-table-tbody > tr > td {
+    text-align: center;
+    padding: 12px; /* Padding for table body */
+    font-size: 14px; /* Slightly smaller font for content */
+}
+
+/* Table row hover effect */
+.commission-table .ant-table-tbody > tr:hover {
+    background-color: #897eb3; /* Light purple hover effect */
+    transition: background-color 0.3s ease-in-out; /* Smooth hover transition */
+}
+
+/* Table even rows styling */
+.commission-table .ant-table-tbody > tr:nth-child(even) {
+    background-color: #f9f9f9; /* Light grey for even rows */
+}
+
+/* Table odd rows styling */
+.commission-table .ant-table-tbody > tr:nth-child(odd) {
+    background-color: #ffffff; /* White for odd rows */
+}
+
+/* Adjust overall spacing */
+.dashboard-cards {
+    margin-bottom: 24px;
+}
+
+.commission-table {
+    margin-top: 16px;
+}
+
+/* Make cards and table responsive */
+@media (max-width: 768px) {
+    .card .ant-statistic-title {
+        font-size: 16px; /* Adjust title size for smaller screens */
+    }
+    .card .ant-statistic-content-value {
+        font-size: 28px; /* Adjust value size for smaller screens */
+    }
+    .dashboard-cards {
+        flex-direction: column;
+    }
+}

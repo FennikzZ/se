@@ -49,6 +49,8 @@ func main() {
 		router.POST("/promotion", promotion.CreatePromotion)
 		router.PUT("/promotion/:id", promotion.UpdatePromotion)
 		router.DELETE("/promotion/:id", promotion.DeletePromotion)
+		router.POST("/test", promotion.UsePromotion)
+
 
 		//commission
 		router.GET("/zzz", withdrawal.GetAllCommission)

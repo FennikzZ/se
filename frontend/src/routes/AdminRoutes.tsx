@@ -28,6 +28,8 @@ const View = Loadable(lazy(() => import("../pages/view")));
 
 const Zzz = Loadable(lazy(() => import("../pages/zzz")));
 
+const Test = Loadable(lazy(() => import("../pages/test")));
+
 //withdrawal
 const Withdrawal = Loadable(lazy(() => import("../pages/withdrawal")));
 
@@ -112,6 +114,10 @@ const AdminRoutes = (isLoggedIn : boolean): RouteObject => {
       {
         path: "/view",
         element: <View />,
+      },
+      {
+        path: "/test",
+        element: <Test />,
       },
       {
         path: "/zzz",

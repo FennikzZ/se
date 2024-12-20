@@ -8,6 +8,7 @@ import (
 type Commission struct {
 	gorm.Model
 
+	CommissionAmount float64  `json:"commission_amount"`
 	CommissionTotal float64    `json:"commission_total"`                // ยอดคอมมิชชั่นรวม (หัก 30)
 	CommissionDate  time.Time    `json:"commission_date"`                 // วันที่คอมมิชชั่น
 

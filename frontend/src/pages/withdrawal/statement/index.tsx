@@ -1,182 +1,49 @@
 import { useState, useEffect } from "react";
-import { Table, Button, Divider, message } from "antd";
-import { DeleteOutlined } from "@ant-design/icons";
-import type { ColumnsType } from "antd/es/table";
-import { GetUsers, DeleteUsersById, GetWithdrawal } from "../../../services/https/index";
-import { UsersInterface } from "../../../interfaces/IUser";
+import { Row, Col, Card, Divider, message, Button } from "antd";
 import { WithdrawalInterface } from "../../../interfaces/IWithdrawal";
-import { useNavigate } from "react-router-dom";
+import { GetWithdrawal, GetBankName } from "../../../services/https/index"; // GetBankName ดึงข้อมูลชื่อธนาคาร
 import dayjs from "dayjs";
+import { Link } from "react-router-dom"; // เพิ่ม Link จาก react-router-dom
+import './Statement.css'; // เพิ่มการ import ไฟล์ CSS สำหรับการตกแต่งเพิ่มเติม
 
 function Statement() {
-  const navigate = useNavigate();
-  const [users, setUsers] = useState<UsersInterface[]>([]);
   const [withdrawals, setWithdrawals] = useState<WithdrawalInterface[]>([]);
+  const [bankNames, setBankNames] = useState<any>({}); // เก็บชื่อธนาคารตาม ID
   const [messageApi, contextHolder] = message.useMessage();
   const myId = localStorage.getItem("id");
+  const [visibleDetails, setVisibleDetails] = useState<Record<number, boolean>>({}); // state for toggling visibility
 
-  const columns: ColumnsType<UsersInterface> = [
-    {
-      title: "",
-      render: (record) => (
-        <>
-          {record?.ID && myId !== record.ID ? (
-            <Button
-              type="dashed"
-              danger
-              icon={<DeleteOutlined />}
-              onClick={() => {
-                deleteUserById(record.ID);
-              }}
-            />
-          ) : null}
-        </>
-      ),
-    },
-    {
-      title: "ลำดับ",
-      dataIndex: "ID",
-      key: "ID",
-    },
-    {
-      title: "ชื่อ",
-      dataIndex: "first_name",
-      key: "first_name",
-    },
-    {
-      title: "นามสกุล",
-      dataIndex: "last_name",
-      key: "last_name",
-    },
-    {
-      title: "อีเมล",
-      dataIndex: "email",
-      key: "email",
-    },
-    {
-      title: "วัน/เดือน/ปี เกิด",
-      key: "birthday",
-      render: (record) => <>{dayjs(record.birthday).format("DD/MM/YYYY")}</>,
-    },
-    {
-      title: "อายุ",
-      dataIndex: "age",
-      key: "age",
-    },
-    {
-      title: "เพศ",
-      key: "gender",
-      render: (record) => <>{record?.gender?.gender}</>,
-    },
-    {
-      title: "ยอดเงิน",
-      key: "income",
-      render: (record) => <>{record.income} บาท</>,
-    },
-    {
-      title: "",
-      render: (record) => (
-        <>
-          {record?.ID ? (
-            <Button
-              type="primary"
-              onClick={() => {
-                navigate(`/promotion/edit/${record.ID}`);
-              }}
-            >
-              แก้ไขข้อมูล
-            </Button>
-          ) : null}
-        </>
-      ),
-    },
-  ];
-
-  // เพิ่มคอลัมน์สำหรับการถอนเงิน
-  const withdrawalColumns: ColumnsType<WithdrawalInterface> = [
-    {
-      title: "ลำดับ",
-      render: (record) => <>{record.user_id}</>,
-      key: "UserID",
-    },
-    {
-      title: "จำนวนเงินที่ถอน",
-      dataIndex: "withdrawal_amount",
-      key: "withdrawal_amount",
-      render: (amount) => <>{amount} บาท</>,
-    },
-    {
-      title: "ค่าคอมมิชชั่น",
-      dataIndex: "withdrawal_commission",
-      key: "withdrawal_commission",
-      render: (commission) => <>{commission} บาท</>,
-    },
-    {
-      title: "จำนวนเงินสุทธิ",
-      dataIndex: "withdrawal_net_amount",
-      key: "withdrawal_net_amount",
-      render: (netAmount) => <>{netAmount} บาท</>,
-    },
-    {
-      title: "หมายเลขบัญชีธนาคาร",
-      dataIndex: "withdrawal_bank_number",
-      key: "withdrawal_bank_number",
-    },
-    {
-      title: "วันที่ถอนเงิน",
-      dataIndex: "withdrawal_date",
-      key: "withdrawal_date",
-      render: (date) => <>{dayjs(date).format("DD/MM/YYYY")}</>,
-    },
-    {
-      title: "ชื่อธนาคาร",
-      dataIndex: "bank_name",
-      key: "bank_name",
-      render: (bank) => <>{bank?.bank_name}</>,
-    },
-  ];
-
-  const deleteUserById = async (id: string) => {
-    if (!id) return;
-    let res = await DeleteUsersById(id);
-    if (res.status === 200) {
-      messageApi.open({
-        type: "success",
-        content: res.data.message,
-      });
-      await getUsers();
-    } else {
-      messageApi.open({
-        type: "error",
-        content: res.data.error,
-      });
-    }
+  const toggleDetails = (id: number) => {
+    setVisibleDetails((prevState) => ({
+      ...prevState,
+      [id]: !prevState[id],
+    }));
   };
 
-  const getUsers = async () => {
-    let res = await GetUsers();
-    if (res.status === 200) {
-      const currentUser = res.data.filter(
-        (user: UsersInterface) => user.ID?.toString() === myId
-      );
-      setUsers(currentUser);
-    } else {
-      setUsers([]);
-      messageApi.open({
-        type: "error",
-        content: res.data.error,
-      });
-    }
-  };
-
+  // ดึงข้อมูลการถอน
   const getWithdrawal = async () => {
     let res = await GetWithdrawal();
     if (res.status === 200) {
-      // กรองข้อมูลการถอนที่ตรงกับ user_id
       const filteredWithdrawals = res.data.filter(
         (withdrawal: WithdrawalInterface) => withdrawal.user_id.toString() === myId
       );
       setWithdrawals(filteredWithdrawals);
+
+      // ดึงข้อมูลชื่อธนาคารทั้งหมด
+      const bankNamesRes = await GetBankName();
+      if (bankNamesRes.status === 200) {
+        // แม็พ BankNameID กับชื่อธนาคาร
+        const bankNamesMap = bankNamesRes.data.reduce((acc: any, bank: any) => {
+          acc[bank.id] = bank.bank_name; // bank.id คือ BankNameID, bank.bank_name คือชื่อธนาคาร
+          return acc;
+        }, {});
+        setBankNames(bankNamesMap); // เก็บข้อมูลชื่อธนาคารที่แม็พแล้ว
+      } else {
+        messageApi.open({
+          type: "error",
+          content: bankNamesRes.data.error,
+        });
+      }
     } else {
       messageApi.open({
         type: "error",
@@ -186,36 +53,93 @@ function Statement() {
   };
 
   useEffect(() => {
-    getUsers();
     getWithdrawal(); // ดึงข้อมูลการถอนเงิน
   }, [myId]);
 
   return (
-    <>
+    <Card bordered={false} className="statement-card"> {/* ครอบทั้งหน้า Statement ด้วย Card */}
       {contextHolder}
 
-      <Divider />
+      {/* หัวข้อรายการถอนเงิน */}
+      <Divider orientation="center" className="statement-divider">
+        รายการเบิกเงิน
+      </Divider>
 
-      <div style={{ marginTop: 20 }}>
-        <Table
-          rowKey="ID"
-          columns={columns}
-          dataSource={users}
-          style={{ width: "100%", overflow: "scroll" }}
-        />
+      <div className="withdrawals-list">
+        {withdrawals.map((withdrawal) => (
+          <Card
+            key={withdrawal.id}
+            className="withdrawal-card"
+            bordered={false}
+          >
+            <Row gutter={[16, 16]} className="card-row">
+              <Col span={16}>
+                <div className="withdrawal-amount">
+                  เบิกเงิน {withdrawal.withdrawal_amount} บาท
+                </div>
+              </Col>
+              <Col span={8} className="text-right">
+                <div className="transaction-date">
+                  <strong>วันทำรายการ:</strong> {dayjs(withdrawal.withdrawal_date).format("DD/MM/YYYY")}
+                </div>
+              </Col>
+            </Row>
+
+            <Row gutter={[16, 16]} style={{ marginTop: 10 }}>
+              <Col span={24} className="text-right">
+                <Button
+                  type="link"
+                  onClick={() => toggleDetails(withdrawal.id!)}
+                  className="details-toggle-btn"
+                >
+                  {visibleDetails[withdrawal.id!] ? "ซ่อนรายละเอียด" : "แสดงรายละเอียด"}
+                </Button>
+              </Col>
+            </Row>
+
+            {/* แสดงข้อมูลเพิ่มเติมเมื่อ visibleDetails เป็น true */}
+            {visibleDetails[withdrawal.id!] && (
+              <>
+                <Row gutter={[16, 16]} style={{ marginTop: 10 }}>
+                  <Col span={12} className="text-left">
+                    <div className="commission">
+                      <strong>ค่าคอมมิชชั่น </strong> {withdrawal.withdrawal_commission} บาท
+                    </div>
+                  </Col>
+                  <Col span={12} className="text-right">
+                    <div className="bank-name">{bankNames[withdrawal.BankNameID]}</div>
+                  </Col>
+                </Row>
+
+                <Row gutter={[16, 16]} style={{ marginTop: 10 }}>
+                  <Col span={12} className="text-left">
+                    <div className="net-amount">
+                      <strong>จำนวนเงินที่ได้ </strong> {withdrawal.withdrawal_net_amount} บาท
+                    </div>
+                  </Col>
+                  <Col span={12} className="text-right">
+                    <div className="account-number">
+                      <strong>เลขบัญชี</strong> {withdrawal.withdrawal_bank_number}
+                    </div>
+                  </Col>
+                </Row>
+              </>
+            )}
+          </Card>
+        ))}
       </div>
 
-      <Divider />
-
-      <div style={{ marginTop: 20 }}>
-        <Table
-          rowKey="id"
-          columns={withdrawalColumns}
-          dataSource={withdrawals}
-          style={{ width: "100%", overflow: "scroll" }}
-        />
-      </div>
-    </>
+      {/* ปุ่มย้อนกลับอยู่ที่ด้านล่างสุด */}
+      <Row justify="center" style={{ marginTop: "auto", marginBottom: "20px" }}>
+  <Col span={24} style={{ display: "flex", justifyContent: "center" }}>
+    <Link to="/withdrawal">
+      <Button block className="back-button">
+        ย้อนกลับ
+      </Button>
+    </Link>
+  </Col>
+</Row>
+    </Card>
   );
 }
 

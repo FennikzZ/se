@@ -83,14 +83,13 @@ async function GetStatus() {
   }
 }
 
-async function UsePromotion(promotionId: number) {
+async function UsePromotion(data: { promotion_code: string }) {
   try {
-    return await axios.post(`${apiUrl}/zzz`, { promotion_id: promotionId }, requestOptions);  // ส่ง promotion_id ไป
+    return await axios.post(`${apiUrl}/test`, data, requestOptions);
   } catch (error) {
     return handleApiError(error);
   }
 }
-
 
 // Withdrawal Service Functions
 async function GetCommission() {

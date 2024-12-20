@@ -1,4 +1,4 @@
-import { Space, Button, Col, Row, Divider, Form, Input, Card, message, DatePicker, InputNumber, Select, Upload } from "antd";
+import { Button, Col, Row, Divider, Form, Input, Card, message, DatePicker, InputNumber, Select, Upload } from "antd";
 import { useState } from "react";
 import { PlusOutlined } from "@ant-design/icons";
 import { PromotionInterface } from "../../../interfaces/IPromotion";
@@ -7,7 +7,7 @@ import { useNavigate, Link } from "react-router-dom";
 import ImgCrop from "antd-img-crop";
 import { useSpring, animated } from "@react-spring/web"; // import react-spring
 import { FileImageOutlined } from "@ant-design/icons";
-
+import dayjs from 'dayjs'; // นำเข้า dayjs
 
 function PromotionCreate() {
   const navigate = useNavigate();
@@ -40,7 +40,7 @@ function PromotionCreate() {
     if (res.status === 200) {
       messageApi.open({
         type: "success",
-        content: res.data.message,
+        content: res.data.message, // เช่น "Promotion created successfully"
       });
       setTimeout(() => {
         navigate("/promotion");
@@ -48,9 +48,9 @@ function PromotionCreate() {
     } else {
       messageApi.open({
         type: "error",
-        content: res.data.error,
+        content: res.data.error || "Error: Create Promotion", // แสดงข้อความ error
       });
-    }
+    }  
   };
 
   const onChange = ({ fileList: newFileList }: { fileList: any }) => {
@@ -208,7 +208,7 @@ function PromotionCreate() {
                     </Col>
 
                     <Col xs={24} sm={12}>
-                      <Form.Item label="จำนวนครั้งที่ใช้ได้" name="use_limit" rules={[{ required: true, message: "กรุณากรอกจำนวนครั้งที่ใช้ได้ !" }]}>
+                      <Form.Item label="จำนวนสิทธิ์" name="use_limit" rules={[{ required: true, message: "กรุณากรอกจำนวนครั้งที่ใช้ได้ !" }]}>
                         <InputNumber min={1} style={{ width: "100%" }} />
                       </Form.Item>
                     </Col>
@@ -219,15 +219,19 @@ function PromotionCreate() {
                 <Col xs={24}>
                   <Row gutter={[16, 16]}>
                     <Col xs={24} sm={12}>
-                      <Form.Item label="ระยะทาง (กิโลเมตร)" name="distance">
+                      <Form.Item label="ระยะทางขั้นต่ำ (กิโลเมตร)" name="distance">
                         <InputNumber min={0} style={{ width: "100%" }} />
                       </Form.Item>
                     </Col>
 
                     <Col xs={24} sm={12}>
                       <Form.Item label="วันสิ้นสุดโปรโมชั่น" name="end_date" rules={[{ required: true, message: "กรุณาเลือกวันหมดเขต !" }]}>
-                        <DatePicker style={{ width: "100%" }} />
+                        <DatePicker
+                          style={{ width: "100%" }}
+                          disabledDate={(current) => current && current < dayjs().endOf('day')}  // ใช้ dayjs แทน moment
+                        />
                       </Form.Item>
+
                     </Col>
                   </Row>
                 </Col>
@@ -240,9 +244,8 @@ function PromotionCreate() {
                 </Col>
 
                 {/* ปุ่ม */}
-                <Col xs={24} sm={24} style={{ textAlign: "center" }}>
+                <Col xs={16} sm={16} style={{ textAlign: "center" }}>
                   <Form.Item>
-                    <Space size="large">
                       <Link to="/promotion">
                         <Button block style={{ width: "150px" }}>ยกเลิก</Button>
                       </Link>
@@ -260,7 +263,6 @@ function PromotionCreate() {
                       >
                         บันทึก
                       </Button>
-                    </Space>
                   </Form.Item>
                 </Col>
               </Row>
