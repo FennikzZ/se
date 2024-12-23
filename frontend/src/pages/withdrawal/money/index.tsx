@@ -116,7 +116,7 @@ function WithdrawalCreate() {
         alignItems: "center",
         height: "110vh",
         padding: "20px",
-        backgroundColor: "rgba(233, 213, 255, 0.4)",
+        backgroundColor: "rgba(233, 255, 255, 0.7)",
       }}
     >
       {contextHolder}
@@ -124,7 +124,7 @@ function WithdrawalCreate() {
         <Card
           style={{
             width: "100%",
-            maxWidth: "800px",
+            maxWidth: "2000px",
             backgroundColor: "rgba(254, 246, 255, 0.65)",
             borderRadius: "8px",
             padding: "20px",
@@ -135,13 +135,12 @@ function WithdrawalCreate() {
           <h2
             style={{
               textAlign: "center",
-              fontSize: "29px",
+              fontSize: "39px",
               fontWeight: "bold",
               marginTop: 0,
-              backgroundColor: "rgba(147, 51, 234, 0.8)", // สีพื้นหลังที่ต้องการ
               padding: "10px", // เพิ่ม padding เพื่อให้ข้อความไม่ติดขอบ
               borderRadius: "5px", // เพิ่มมุมมน
-              color: "#fff", // เปลี่ยนสีข้อความให้ขาวเพื่อให้อ่านง่าย
+              color: "#47456C", // เปลี่ยนสีข้อความให้ขาวเพื่อให้อ่านง่าย
             }}
           >
             เบิกเงินพนักงาน

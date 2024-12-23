@@ -1,5 +1,5 @@
 // controller/status/status.go
-package status
+package statuspromotion
 
 import (
 	"net/http"
@@ -13,11 +13,11 @@ func GetAllStatus(c *gin.Context) {
 	db := config.DB()
 
 
-	var status []entity.Status
+	var statuspromotion []entity.StatusPromotion
  
-	db.Find(&status)
+	db.Find(&statuspromotion)
  
  
-	c.JSON(http.StatusOK, &status)
+	c.JSON(http.StatusOK, &statuspromotion)
 
 }

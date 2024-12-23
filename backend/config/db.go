@@ -32,7 +32,7 @@ func SetupDatabase() {
 		//promotion
 		&entity.Promotion{},
 		&entity.DiscountType{},
-		&entity.Status{},
+		&entity.StatusPromotion{},
 		//withdraw
 		&entity.Withdrawal{},
 		&entity.Commission{},
@@ -48,10 +48,10 @@ func SetupDatabase() {
 	db.FirstOrCreate(&GenderFemale, &entity.Genders{Gender: "Female"})
 
 	// สร้างข้อมูลตัวอย่าง Status
-	ActiveStatus := entity.Status{Status: "ACTIVE"}
-	ExpiredStatus := entity.Status{Status: "EXPIRED"}
-	db.FirstOrCreate(&ActiveStatus, &entity.Status{Status: "ACTIVE"})
-	db.FirstOrCreate(&ExpiredStatus, &entity.Status{Status: "EXPIRED"})
+	ActiveStatus := entity.StatusPromotion{StatusPromotion: "ACTIVE"}
+	ExpiredStatus := entity.StatusPromotion{StatusPromotion: "EXPIRED"}
+	db.FirstOrCreate(&ActiveStatus, &entity.StatusPromotion{StatusPromotion: "ACTIVE"})
+	db.FirstOrCreate(&ExpiredStatus, &entity.StatusPromotion{StatusPromotion: "EXPIRED"})
 
 	// สร้างข้อมูลตัวอย่าง DiscountType
 	AmountDiscount := entity.DiscountType{DiscountType: "amount"}
@@ -76,133 +76,133 @@ func SetupDatabase() {
 	promotions := []entity.Promotion{
 		{
 			PromotionCode:        "DRIVE001",
-			PromotionName:        "ส่งฟรี ไม่มีข้อแม้!",
-			PromotionDescription: "รับบริการส่งฟรีสำหรับระยะทางไม่เกิน 10 กม.",
-			Discount:             100.0, // คิดเป็นส่วนลดเต็ม 100%
-			EndDate:              time.Now().Add(30 * 24 * time.Hour),
-			UseLimit:             1,
-			UseCount:             0,
-			Distance:             10.0,
-			Photo:                "promo1.jpg",
-			DiscountTypeID:       2, // Percent discount
-			StatusID:             1, // ACTIVE
-		},
-		{
-			PromotionCode:        "DRIVE002",
-			PromotionName:        "ลด 10% เมื่อซื้อสินค้าครบ 500 บาท",
-			PromotionDescription: "รับส่วนลด 10% เมื่อยอดซื้อเกิน 500 บาท",
-			Discount:             10.0, // ส่วนลด 10%
+			PromotionName:        "ส่งฟรี ไม่มีข้อแม้ !",
+			PromotionDescription: "ฟรีสำหรับลูกค้าทุกท่าน",
+			Discount:             100, // คิดเป็นส่วนลดเต็ม 100%
 			EndDate:              time.Now().Add(30 * 24 * time.Hour),
 			UseLimit:             2,
 			UseCount:             0,
-			Distance:             0.0,
-			Photo:                "promo2.jpg",
+			DistancePromotion:    0.0,
+			Photo:                "promo1.jpg",
 			DiscountTypeID:       2, // Percent discount
-			StatusID:             1, // ACTIVE
+			StatusPromotionID:             1, // ACTIVE
 		},
 		{
-			PromotionCode:        "DRIVE003",
-			PromotionName:        "ลด 100 บาท สำหรับการซื้อครั้งแรก",
-			PromotionDescription: "ลูกค้าที่ยังไม่เคยซื้อ สามารถรับส่วนลด 100 บาท",
-			Discount:             100.0, // ส่วนลด 100 บาท
-			EndDate:              time.Now().Add(30 * 24 * time.Hour),
-			UseLimit:             3,
-			UseCount:             0,
-			Distance:             0.0,
-			Photo:                "promo3.jpg",
-			DiscountTypeID:       1, // Amount discount
-			StatusID:             1, // ACTIVE
-		},
-		{
-			PromotionCode:        "DRIVE004",
-			PromotionName:        "ลด 15% สำหรับการซื้อสินค้าราคาสูงกว่า 1000 บาท",
-			PromotionDescription: "รับส่วนลด 15% เมื่อยอดซื้อเกิน 1000 บาท",
-			Discount:             15.0, // ส่วนลด 15%
-			EndDate:              time.Now().Add(30 * 24 * time.Hour),
-			UseLimit:             4,
-			UseCount:             0,
-			Distance:             0.0,
-			Photo:                "promo4.jpg",
-			DiscountTypeID:       2, // Percent discount
-			StatusID:             1, // ACTIVE
-		},
-		{
-			PromotionCode:        "DRIVE005",
-			PromotionName:        "ลด 200 บาท เมื่อชำระผ่านบัตรเครดิต",
-			PromotionDescription: "รับส่วนลด 200 บาท เมื่อชำระผ่านบัตรเครดิต",
-			Discount:             200.0, // ส่วนลด 200 บาท
+			PromotionCode:        "DRIVE002",
+			PromotionName:        "ลด 10/10",
+			PromotionDescription: "รับส่วนลด 10% เมื่อเดินทางขั้นต่ำ 10 กม.",
+			Discount:             10, // ส่วนลด 10%
 			EndDate:              time.Now().Add(30 * 24 * time.Hour),
 			UseLimit:             5,
 			UseCount:             0,
-			Distance:             0.0,
+			DistancePromotion:    10.0,
+			Photo:                "promo2.jpg",
+			DiscountTypeID:       2, // Percent discount
+			StatusPromotionID:             1, // ACTIVE
+		},
+		{
+			PromotionCode:        "DRIVE003",
+			PromotionName:        "ลด 100 บาทต้อนรับปีใหม่",
+			PromotionDescription: "เพียงเดินทางขั้นต่ำ 10 กม. ช่วงเทศกาล",
+			Discount:             100, // ส่วนลด 100 บาท
+			EndDate:              time.Now().Add(30 * 24 * time.Hour),
+			UseLimit:             3,
+			UseCount:             0,
+			DistancePromotion:    10.0,
+			Photo:                "promo3.jpg",
+			DiscountTypeID:       1, // Amount discount
+			StatusPromotionID:             1, // ACTIVE
+		},
+		{
+			PromotionCode:        "DRIVE004",
+			PromotionName:        "ลด 15% สุดคุ้ม",
+			PromotionDescription: "เมื่อเดินทางในเมืองขั้นต่ำ 5 กม.",
+			Discount:             15, // ส่วนลด 15%
+			EndDate:              time.Now().Add(30 * 24 * time.Hour),
+			UseLimit:             4,
+			UseCount:             0,
+			DistancePromotion:    5.0,
+			Photo:                "promo4.jpg",
+			DiscountTypeID:       2, // Percent discount
+			StatusPromotionID:             1, // ACTIVE
+		},
+		{
+			PromotionCode:        "DRIVE005",
+			PromotionName:        "ลด 200 บาทแน่นๆ",
+			PromotionDescription: "เมื่อเดินทางระยะไกล 20 กม.",
+			Discount:             200, // ส่วนลด 200 บาท
+			EndDate:              time.Now().Add(30 * 24 * time.Hour),
+			UseLimit:             2,
+			UseCount:             0,
+			DistancePromotion:    20.0,
 			Photo:                "promo5.jpg",
 			DiscountTypeID:       1, // Amount discount
-			StatusID:             1, // ACTIVE
+			StatusPromotionID:             1, // ACTIVE
 		},
 		{
 			PromotionCode:        "DRIVE006",
-			PromotionName:        "ลด 50% เมื่อซื้อ 2 ชิ้นขึ้นไป",
-			PromotionDescription: "รับส่วนลด 50% เมื่อซื้อสินค้าทุกประเภท 2 ชิ้นขึ้นไป",
-			Discount:             50.0, // ส่วนลด 50%
+			PromotionName:        "ลดครึ่งนึง 50%",
+			PromotionDescription: "เมื่อเดินทางในระยะ 7 กม.",
+			Discount:             50, // ส่วนลด 50%
 			EndDate:              time.Now().Add(30 * 24 * time.Hour),
-			UseLimit:             6,
+			UseLimit:             4,
 			UseCount:             0,
-			Distance:             0.0,
+			DistancePromotion:    7.0,
 			Photo:                "promo6.jpg",
 			DiscountTypeID:       2, // Percent discount
-			StatusID:             1, // ACTIVE
+			StatusPromotionID:             1, // ACTIVE
 		},
 		{
 			PromotionCode:        "DRIVE007",
-			PromotionName:        "ส่งฟรี สำหรับการสั่งซื้อมากกว่า 1000 บาท",
-			PromotionDescription: "รับบริการส่งฟรี เมื่อยอดสั่งซื้อเกิน 1000 บาท",
-			Discount:             100.0, // ส่งฟรี (ถือว่าเป็นการลดราคา)
+			PromotionName:        "เดินทางคุ้มลด 5%",
+			PromotionDescription: "แจกจ่ายเดินทางขั้นต่ำเพียง 3 กม.",
+			Discount:             5, // 
 			EndDate:              time.Now().Add(30 * 24 * time.Hour),
 			UseLimit:             7,
 			UseCount:             0,
-			Distance:             0.0,
+			DistancePromotion:    3.0,
 			Photo:                "promo7.jpg",
-			DiscountTypeID:       1, // Amount discount
-			StatusID:             1, // ACTIVE
+			DiscountTypeID:       2, // percent discount
+			StatusPromotionID:             1, // ACTIVE
 		},
 		{
 			PromotionCode:        "DRIVE008",
-			PromotionName:        "ลด 25% สำหรับการสั่งซื้อผ่านแอปพลิเคชัน",
-			PromotionDescription: "รับส่วนลด 25% เมื่อสั่งซื้อผ่านแอปพลิเคชันของเรา",
-			Discount:             25.0, // ส่วนลด 25%
+			PromotionName:        "ลด 25% เดือนแห่งความสุข",
+			PromotionDescription: "เดินทางครบเพียง 6 กม.",
+			Discount:             25, // ส่วนลด 25%
 			EndDate:              time.Now().Add(30 * 24 * time.Hour),
 			UseLimit:             8,
 			UseCount:             0,
-			Distance:             0.0,
+			DistancePromotion:    6.0,
 			Photo:                "promo8.jpg",
 			DiscountTypeID:       2, // Percent discount
-			StatusID:             1, // ACTIVE
+			StatusPromotionID:             1, // ACTIVE
 		},
 		{
 			PromotionCode:        "DRIVE009",
-			PromotionName:        "ลด 30% เมื่อซื้อสินค้าราคา 2000 บาทขึ้นไป",
-			PromotionDescription: "รับส่วนลด 30% เมื่อยอดซื้อเกิน 2000 บาท",
-			Discount:             30.0, // ส่วนลด 30%
+			PromotionName:        "ลด 35% สุดโหด",
+			PromotionDescription: "ภายในพื้นที่ 8 กม.",
+			Discount:             35, // ส่วนลด 30%
 			EndDate:              time.Now().Add(30 * 24 * time.Hour),
 			UseLimit:             9,
 			UseCount:             0,
-			Distance:             0.0,
+			DistancePromotion:    8.0,
 			Photo:                "promo9.jpg",
 			DiscountTypeID:       2, // Percent discount
-			StatusID:             1, // ACTIVE
+			StatusPromotionID:             1, // ACTIVE
 		},
 		{
 			PromotionCode:        "DRIVE010",
-			PromotionName:        "ลด 10% สำหรับสินค้าประเภทอุปกรณ์กีฬา",
-			PromotionDescription: "รับส่วนลด 10% สำหรับสินค้าประเภทอุปกรณ์กีฬา",
-			Discount:             10.0, // ส่วนลด 10%
+			PromotionName:        "คุ้มกว่านี้มีอีกไหม 99",
+			PromotionDescription: "ลด 99% เหมือนส่งฟรีระยะทางขั้นต่ำ 30 กม.",
+			Discount:             99, // ส่วนลด 99%
 			EndDate:              time.Now().Add(30 * 24 * time.Hour),
-			UseLimit:             10,
+			UseLimit:             4,
 			UseCount:             0,
-			Distance:             0.0,
+			DistancePromotion:    30.0,
 			Photo:                "promo10.jpg",
 			DiscountTypeID:       2, // Percent discount
-			StatusID:             1, // ACTIVE
+			StatusPromotionID:             2, // close
 		},
 	}
 
@@ -214,10 +214,10 @@ func SetupDatabase() {
 	// สร้างข้อมูล Commission ตัวอย่าง
 	commission := entity.Commission{
 		CommissionAmount: 0.0,
-		CommissionTotal: 0.0,                 // ค่าคอมมิชชั่นที่หัก
-		CommissionDate:  time.Now(),            // วันที่คอมมิชชั่น
-		WithdrawalID:    0,                     // ใช้รหัส Withdrawal (ปรับให้เหมาะสมกับข้อมูลที่มี)
-		Withdrawal:      nil, // การเชื่อมโยงกับข้อมูล Withdrawal
+		CommissionTotal:  0.0,        // ค่าคอมมิชชั่นที่หัก
+		CommissionDate:   time.Now(), // วันที่คอมมิชชั่น
+		WithdrawalID:     0,          // ใช้รหัส Withdrawal (ปรับให้เหมาะสมกับข้อมูลที่มี)
+		Withdrawal:       nil,        // การเชื่อมโยงกับข้อมูล Withdrawal
 	}
 
 	// บันทึกข้อมูล Commission ลงในฐานข้อมูล

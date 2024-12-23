@@ -81,7 +81,7 @@ function Withdrawal() {
               boxShadow: "rgba(0, 0, 0, 0.1) 0px 4px 12px",
               borderRadius: "10px",
               border: "none",
-              maxWidth: "600px", // ปรับขนาด Card
+              maxWidth: "2000px", // ปรับขนาด Card
               margin: "0 auto", // จัดกึ่งกลาง
             }}
           >

@@ -67,7 +67,7 @@ func main() {
 
 	r.GET("/discounttype", discounttype.GetAllD) // ใช้ฟังก์ชัน GetAllD จาก package discounttype
 
-	r.GET("/statuses", status.GetAllStatus) // เพิ่มเส้นทางสำหรับ Status
+	r.GET("/statuspromotion", statuspromotion.GetAllStatus) // เพิ่มเส้นทางสำหรับ Status
 
 	// Genders Route
 	r.GET("/genders", genders.GetAll)

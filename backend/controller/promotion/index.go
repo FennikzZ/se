@@ -15,7 +15,7 @@ func GetAllPromotion(c *gin.Context) {
 	db := config.DB()
 
 	// ดึงข้อมูลโปรโมชั่นทั้งหมด พร้อมข้อมูล DiscountType และ Status
-	results := db.Preload("DiscountType").Preload("Status").Find(&promotions)
+	results := db.Preload("DiscountType").Preload("StatusPromotion").Find(&promotions)
 
 	if results.Error != nil {
 		c.JSON(http.StatusNotFound, gin.H{"error": results.Error.Error()})
@@ -33,7 +33,7 @@ func GetPromotion(c *gin.Context) {
 	db := config.DB()
 
 	// ค้นหาโปรโมชั่นโดย ID พร้อมข้อมูล DiscountType และ Status
-	results := db.Preload("DiscountType").Preload("Status").First(&promotion, ID)
+	results := db.Preload("DiscountType").Preload("StatusPromotion").First(&promotion, ID)
 
 	if results.Error != nil {
 		c.JSON(http.StatusNotFound, gin.H{"error": results.Error.Error()})
@@ -54,7 +54,7 @@ func CreatePromotion(c *gin.Context) {
 	}
 
 	// ตรวจสอบว่า StatusID ถูกส่งมาหรือไม่
-	if promotion.StatusID == 0 {
+	if promotion.StatusPromotionID == 0 {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "StatusID is required"})
 		return
 	}
@@ -136,7 +136,7 @@ func UsePromotion(c *gin.Context) {
 	}
 
 	// ตรวจสอบสถานะโปรโมชั่น (status_id)
-	if promotion.StatusID == 2 {
+	if promotion.StatusPromotionID == 2 {
 		// ถ้า status_id = 2 (ปิดการใช้งาน) จะไม่สามารถใช้ได้
 		c.JSON(http.StatusForbidden, gin.H{"error": "Promotion is disabled"})
 		return
@@ -145,7 +145,7 @@ func UsePromotion(c *gin.Context) {
 	// ตรวจสอบว่า EndDate มากกว่าวันปัจจุบัน
 	if promotion.EndDate.Before(time.Now()) || promotion.EndDate.Equal(time.Now()) {
 		// ถ้า EndDate มากกว่าวันปัจจุบัน ให้เปลี่ยน StatusID เป็น 2 ทันที
-		promotion.StatusID = 2
+		promotion.StatusPromotionID = 2
 
 		// บันทึกการเปลี่ยนแปลง status_id ในฐานข้อมูล
 		if result := db.Save(&promotion); result.Error != nil {
@@ -160,7 +160,7 @@ func UsePromotion(c *gin.Context) {
 	// ตรวจสอบว่า use_count ไม่เกิน use_limit
 	if promotion.UseCount >= promotion.UseLimit {
 		// ถ้า use_count เท่ากับ use_limit ให้เปลี่ยน status_id เป็น 2
-		promotion.StatusID = 2
+		promotion.StatusPromotionID = 2
 
 		// บันทึกการเปลี่ยนแปลง status_id ในฐานข้อมูล
 		if result := db.Save(&promotion); result.Error != nil {

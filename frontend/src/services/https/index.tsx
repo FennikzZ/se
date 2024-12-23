@@ -75,9 +75,9 @@ async function GetDiscountType() {
   }
 }
 
-async function GetStatus() {
+async function GetStatusPromotion() {
   try {
-    return await axios.get(`${apiUrl}/status`, requestOptions);
+    return await axios.get(`${apiUrl}/StatusPromotion`, requestOptions);
   } catch (error) {
     return handleApiError(error);
   }
@@ -205,7 +205,7 @@ export {
   UpdatePromotionById,
   DeletePromotionById,
   GetDiscountType,
-  GetStatus,
+  GetStatusPromotion,
   UsePromotion,
   //withdrawal
   GetCommission,

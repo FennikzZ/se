@@ -13,7 +13,7 @@ export interface PromotionInterface {
   photo: string;
   DiscountTypeID: string;
   discount: number;
-  status_id: number;
+  status_promotion_id: number;
   use_limit: number;
   use_count: number;
   distance: number;
@@ -160,7 +160,7 @@ function View() {
 
                           <Col>
                             <div style={{ textAlign: "right" }}>
-                              {renderStatus(promotion.status_id)}
+                              {renderStatus(promotion.status_promotion_id)}
                             </div>
                           </Col>
                         </Row>

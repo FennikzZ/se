@@ -6,7 +6,7 @@ import { GetPromotions, DeletePromotionById } from "../../services/https/index";
 import { PromotionInterface } from "../../interfaces/IPromotion";
 import { Link, useNavigate } from "react-router-dom";
 import dayjs from "dayjs";
-import { SearchOutlined } from "@ant-design/icons";
+import { SearchOutlined, CheckCircleOutlined, CloseCircleOutlined } from "@ant-design/icons";
 
 // นำเข้าคลาส CSS
 import "./Promotion.css";
@@ -40,9 +40,28 @@ function Promotion() {
       align: "center", // จัดตำแหน่งหัวข้อและเนื้อหากลาง
     },
     {
-      title: "ส่วนลด",
-      dataIndex: "discount",
-      key: "discount",
+      title: "สถานะ",
+      dataIndex: "status_promotion_id",
+      key: "status_promotion_id",
+      render: (text) => {
+        if (text === 1) {
+          return (
+            <span style={{ color: "green", display: "flex", justifyContent: "center", alignItems: "center" }}>
+              <CheckCircleOutlined style={{ marginRight: 5 }} />
+
+            </span>
+          );
+        }
+        if (text === 2) {
+          return (
+            <span style={{ color: "red", display: "flex", justifyContent: "center", alignItems: "center" }}>
+              <CloseCircleOutlined style={{ marginRight: 5 }} />
+
+            </span>
+          );
+        }
+        return "ไม่ระบุ";
+      },
       align: "center", // จัดตำแหน่งหัวข้อและเนื้อหากลาง
     },
     {
@@ -57,14 +76,9 @@ function Promotion() {
       align: "center", // จัดตำแหน่งหัวข้อและเนื้อหากลาง
     },
     {
-      title: "สถานะการใช้งาน",
-      dataIndex: "status_id",
-      key: "status_id",
-      render: (text) => {
-        if (text === 1) return "ใช้งานได้"; // Active
-        if (text === 2) return "ปิดการใช้งาน"; // Expired
-        return "ไม่ระบุ"; // Fallback for any other values
-      },
+      title: "ส่วนลด",
+      dataIndex: "discount",
+      key: "discount",
       align: "center", // จัดตำแหน่งหัวข้อและเนื้อหากลาง
     },
     {
@@ -74,7 +88,7 @@ function Promotion() {
       align: "center", // จัดตำแหน่งหัวข้อและเนื้อหากลาง
     },
     {
-      title: "จำนวนที่ใช้แล้ว", // เพิ่มคอลัมน์นี้เพื่อแสดง use_count
+      title: "จำนวนที่ใช้สิทธิ์", // เพิ่มคอลัมน์นี้เพื่อแสดง use_count
       dataIndex: "use_count",
       key: "use_count",
       render: (text) => text || 0, // ถ้าไม่มีค่าให้แสดง 0
@@ -82,8 +96,8 @@ function Promotion() {
     },
     {
       title: "ระยะทาง",
-      dataIndex: "distance",
-      key: "distance",
+      dataIndex: "distance_promotion",
+      key: "distance_promotion",
       align: "center", // จัดตำแหน่งหัวข้อและเนื้อหากลาง
     },
     {
